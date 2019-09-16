@@ -1,5 +1,7 @@
 {
   "name": "K-POP Star Collection",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

@@ -1,0 +1,31 @@
+.header-toolbar {
+    --background: #3b5998;
+    color: white;
+}
+
+ion-content {
+    --padding-top: 3px;
+
+    .facebook-users {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        
+        .button-contents {
+            white-space: nowrap;
+            
+            ion-button {
+                --border-color: #3b5998;
+                --color: #3b5998;
+            }
+            
+            ion-button.selected {
+                --background: #3b5998;
+                --color: white;
+            }
+        }
+    }
+}
+    
+::-webkit-scrollbar {
+    display: none; 
+}

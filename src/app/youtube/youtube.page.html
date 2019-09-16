@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Youtube
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
+  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList | async" (click)="playYoutube(youtube.videoId)">
+    <img src="{{ youtube.thumbnailUrl }}" />
+    <span class="youtube-time">{{ youtube.time }}</span>
+    <span class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
+    <ion-card-header>
+      <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+  <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
+    <ion-icon name="arrow-up"></ion-icon>
+  </ion-button>
+</ion-content>

@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>facebook</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="facebook-content" padding>
+  <div class="facebook-users">
+    <div class="button-contents">
+      <ion-button fill="outline" size="small" *ngFor="let facebook of facebookList | async" [ngClass]="{ 'selected': activatedFacebook == facebook.userName}"
+        (click)="facebookWidgetInit(facebook.timelineUrl, facebook.userName)">
+        {{ facebook.userName }}
+      </ion-button>
+    </div>
+  </div>
+  <div id="fb-root"></div>
+</ion-content>

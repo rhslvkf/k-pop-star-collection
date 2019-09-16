@@ -1,0 +1,40 @@
+.header-toolbar {
+    --background: #1da1f2;
+    color: white;
+}
+
+.tweet-users {
+    overflow-x: scroll;
+    overflow-y: hidden;
+
+    .button-contents {
+        white-space: nowrap;
+
+        ion-button {
+            --border-color: #1da1f2;
+            --color: #1da1f2;
+        }
+
+        ion-button.selected {
+            --background: #1da1f2;
+            --color: white;
+        }
+    }
+}
+
+::-webkit-scrollbar {
+    display: none; 
+}
+
+ion-content {
+    --padding-top: 3px;
+
+    .scrollTopBtn {
+        display: none;
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+    }
+}
