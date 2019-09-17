@@ -9,7 +9,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { FIREBASE_CONFIG } from '../firebase.config';
 import { HomePage } from './home.page';
-import { SearchPipe } from '../search.pipe';
+import { PipesModule } from '../pipes.module';
 
 @NgModule({
   imports: [
@@ -23,11 +23,9 @@ import { SearchPipe } from '../search.pipe';
       }
     ]),
     AngularFireModule.initializeApp(FIREBASE_CONFIG),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    PipesModule
   ],
-  declarations: [
-    HomePage,
-    SearchPipe
-  ]
+  declarations: [HomePage]
 })
 export class HomePageModule {}

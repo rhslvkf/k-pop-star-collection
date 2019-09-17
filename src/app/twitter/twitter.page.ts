@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { LoadingController, IonContent } from '@ionic/angular';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
@@ -31,10 +32,13 @@ export class TwitterPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private firebaseDB: AngularFireDatabase,
     private loadingCtrl: LoadingController,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private statusBar: StatusBar
   ) { }
 
   ngOnInit() {
+    this.statusBar.backgroundColorByHexString('#1989cf');
+
     this.loadingService.presentLoading();
 
     let starName = this.activatedRoute.snapshot.paramMap.get('starName');

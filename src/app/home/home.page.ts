@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { IonContent } from '@ionic/angular';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
@@ -35,8 +37,14 @@ export class HomePage {
   constructor(
     private firebaseDB: AngularFireDatabase,
     private loadingService: LoadingService,
-    private myToastService: MyToastService
+    private myToastService: MyToastService,
+    private statusBar: StatusBar,
+    private activatedRoute: ActivatedRoute
   ) {
+    activatedRoute.params.subscribe(() => {
+      this.statusBar.backgroundColorByHexString('#1a9c95');
+    });
+
     loadingService.presentLoading();
 
     this.stars = this.firebaseDB.list<Star>('stars', ref => ref.orderByChild('order'))

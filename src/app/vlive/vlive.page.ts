@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -18,10 +20,13 @@ export class VlivePage implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private firebaseDB: AngularFireDatabase,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private statusBar: StatusBar
   ) { }
 
   ngOnInit() {
+    this.statusBar.backgroundColorByHexString('#3cb7bd');
+
     this.loadingService.presentLoading();
 
     let starName = this.activatedRoute.snapshot.paramMap.get('starName');

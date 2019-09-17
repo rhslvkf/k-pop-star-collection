@@ -5,8 +5,28 @@
 
 ion-content {
     --background: #ebebeb;
+    --padding-top: 3px;
     text-align: center;
+
+    .youtube-sort {
+        overflow-x: scroll;
+        overflow-y: hidden;
     
+        .button-contents {
+            white-space: nowrap;
+    
+            ion-button {
+                --border-color: red;
+                --color: red;
+            }
+    
+            ion-button.selected {
+                --background: red;
+                --color: white;
+            }
+        }
+    }
+
     .youtube-content {
         margin: 3px;
         width: 155px;

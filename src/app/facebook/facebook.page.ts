@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+
 import { Observable } from 'rxjs';
-import { map, windowCount } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AngularFireDatabase } from 'angularfire2/database';
 
 import { LoadingService } from '../loading.service';
@@ -25,10 +27,13 @@ export class FacebookPage implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private firebaseDB: AngularFireDatabase,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private statusBar: StatusBar
   ) { }
 
   ngOnInit() {
+    this.statusBar.backgroundColorByHexString('#304a80');
+
     this.loadingService.presentLoading();
 
     let starName = this.activatedRoute.snapshot.paramMap.get('starName');

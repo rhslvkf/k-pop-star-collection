@@ -10,7 +10,16 @@
 </ion-header>
 
 <ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
-  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList | async" (click)="playYoutube(youtube.videoId)">
+  <div class="youtube-sort">
+    <div class="button-contents">
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': allSort}" (click)="youtubeSorting('ALL')">All</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': mvSort}" (click)="youtubeSorting('MV')">MV</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': fanCamSort}" (click)="youtubeSorting('FanCam')">FanCam</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': stageMixSort}" (click)="youtubeSorting('StageMix')">StageMix</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': dancePracticeSort}" (click)="youtubeSorting('DancePractice')">DancePractice</ion-button>
+    </div>
+  </div>
+  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList | async | search : terms" (click)="playYoutube(youtube.videoId)">
     <img src="{{ youtube.thumbnailUrl }}" />
     <span class="youtube-time">{{ youtube.time }}</span>
     <span class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
