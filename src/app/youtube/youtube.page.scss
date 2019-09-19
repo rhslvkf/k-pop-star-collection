@@ -8,6 +8,33 @@ ion-content {
     --padding-top: 3px;
     text-align: center;
 
+    ion-fab {
+        left: 20px;
+        bottom: 20px;
+
+        ion-fab-button {
+            width: 36px;
+            height: 36px;
+        }
+
+        ion-fab-list {
+            left: -10px;
+            bottom: -20px;
+
+            .twitter-icon {
+                color: #1da1f2;
+            }
+        
+            .facebook-icon {
+                color: #3b5998;
+            }
+
+            .person-icon {
+                color: lightseagreen;
+            }
+        }
+    }
+
     .youtube-sort {
         overflow-x: scroll;
         overflow-y: hidden;

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { LoadingController, IonContent } from '@ionic/angular';
+import { LoadingController, IonContent, ModalController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { LoadingService } from '../loading.service';
+import { ModalPage } from '../modal/modal.page';
 
 export interface Twitter {
   userName: string;
@@ -27,23 +28,36 @@ export class TwitterPage implements OnInit {
   isLoading = false;
   twitterList: Observable<Twitter[]>
   activatedTweet: string;
+  starName = '';
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private firebaseDB: AngularFireDatabase,
     private loadingCtrl: LoadingController,
     private loadingService: LoadingService,
-    private statusBar: StatusBar
-  ) { }
+    private statusBar: StatusBar,
+    private modalCtrl: ModalController
+  ) {
+    activatedRoute.params.subscribe(() => {
+      statusBar.backgroundColorByHexString('#1989cf');
+
+      let menuToolbar = document.getElementById('menu-toolbar') as HTMLElement;
+      menuToolbar.classList.remove('home', 'youtube', 'twitter', 'facebook', 'vlive');
+      menuToolbar.classList.add('twitter');
+    });
+  }
+
+  goSelf(starName: string) {
+    this.starName = starName;
+    this.ngOnInit();
+  }
 
   ngOnInit() {
-    this.statusBar.backgroundColorByHexString('#1989cf');
-
     this.loadingService.presentLoading();
 
-    let starName = this.activatedRoute.snapshot.paramMap.get('starName');
+    if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.twitterList = this.firebaseDB.list<Twitter>('sns/twitter/' + starName, ref => ref.orderByChild('order'))
+    this.twitterList = this.firebaseDB.list<Twitter>('sns/twitter/' + this.starName, ref => ref.orderByChild('order'))
       .snapshotChanges()
       .pipe(
         map(changes => {
@@ -52,7 +66,7 @@ export class TwitterPage implements OnInit {
           }))
         })
       );
-
+      
     this.twitterList.subscribe(twitterList => {
       this.twitterWidgetInit(twitterList[0].timelineUrl, twitterList[0].tweetName);
     });
@@ -93,9 +107,7 @@ export class TwitterPage implements OnInit {
   }
 
   removeTwitterWidget() {
-    if(document.querySelector('[id^="twitter-widget"]')) {
-      document.querySelector('[id^="twitter-widget"]').remove();
-    }
+    if(document.querySelector('[id^="twitter-widget"]')) document.querySelector('[id^="twitter-widget"]').remove();
   }
 
   removeElementById(id: string) {
@@ -135,6 +147,20 @@ export class TwitterPage implements OnInit {
     } else if (document.querySelector('#tweet-content').shadowRoot.querySelector('.inner-scroll').scrollTop < 200) {
       d.style.display = "none";
     }
+  }
+
+  async openModal() {
+    const modal = await this.modalCtrl.create({
+      showBackdrop: true,
+      backdropDismiss: true,
+      cssClass: 'search-star-modal',
+      component: ModalPage,
+      componentProps: {
+        'callParentFunction': this.goSelf.bind(this)
+      }
+    });
+
+    return await modal.present();
   }
 
 }

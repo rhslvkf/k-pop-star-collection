@@ -2,3 +2,36 @@
     --background: #54F7FF;
     color: #464A5E;
 }
+
+ion-content {
+    ion-fab {
+        left: 20px;
+        bottom: 20px;
+
+        ion-fab-button {
+            width: 36px;
+            height: 36px;
+        }
+
+        ion-fab-list {
+            left: -10px;
+            bottom: -20px;
+
+            .youtube-icon {
+                color: red;
+            }
+
+            .twitter-icon {
+                color: #1da1f2;
+            }
+        
+            .facebook-icon {
+                color: #3b5998;
+            }
+
+            .person-icon {
+                color: lightseagreen;
+            }
+        }
+    }
+}

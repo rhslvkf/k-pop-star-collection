@@ -29,6 +29,33 @@
 ion-content {
     --padding-top: 3px;
 
+    ion-fab {
+        left: 20px;
+        bottom: 20px;
+
+        ion-fab-button {
+            width: 36px;
+            height: 36px;
+        }
+
+        ion-fab-list {
+            left: -10px;
+            bottom: -20px;
+
+            .youtube-icon {
+                color: red;
+            }
+        
+            .facebook-icon {
+                color: #3b5998;
+            }
+
+            .person-icon {
+                color: lightseagreen;
+            }
+        }
+    }
+
     .scrollTopBtn {
         display: none;
         position: fixed;

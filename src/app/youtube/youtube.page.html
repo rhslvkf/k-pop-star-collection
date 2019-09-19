@@ -10,13 +10,32 @@
 </ion-header>
 
 <ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button color="tertiary">
+      <ion-icon name="more"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button color="light" routerLink="/vlive/{{ starName }}">
+        <ion-img class="vlive-log" src="../../assets/vlive-logo.png"></ion-img>
+      </ion-fab-button>
+      <ion-fab-button color="light" routerLink="/sns/facebook/{{ starName }}">
+        <ion-icon class="facebook-icon" name="logo-facebook"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="light" routerLink="/sns/twitter/{{ starName }}">
+        <ion-icon class="twitter-icon" name="logo-twitter"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="light" (click)="openModal()">
+        <ion-icon class="person-icon" name="person"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
   <div class="youtube-sort">
     <div class="button-contents">
-      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': allSort}" (click)="youtubeSorting('ALL')">All</ion-button>
-      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': mvSort}" (click)="youtubeSorting('MV')">MV</ion-button>
-      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': fanCamSort}" (click)="youtubeSorting('FanCam')">FanCam</ion-button>
-      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': stageMixSort}" (click)="youtubeSorting('StageMix')">StageMix</ion-button>
-      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': dancePracticeSort}" (click)="youtubeSorting('DancePractice')">DancePractice</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': allSort }" (click)="youtubeSorting('ALL')">All</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': mvSort }" (click)="youtubeSorting('MV')">MV</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': fanCamSort }" (click)="youtubeSorting('FanCam')">FanCam</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': stageMixSort }" (click)="youtubeSorting('StageMix')">StageMix</ion-button>
+      <ion-button fill="outline" size="small" [ngClass]="{ 'selected': dancePracticeSort }" (click)="youtubeSorting('DancePractice')">DancePractice</ion-button>
     </div>
   </div>
   <ion-card class="youtube-content" *ngFor="let youtube of youtubeList | async | search : terms" (click)="playYoutube(youtube.videoId)">

@@ -8,6 +8,25 @@
 </ion-header>
 
 <ion-content id="facebook-content" padding>
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button color="tertiary">
+      <ion-icon name="more"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button color="light" routerLink="/vlive/{{ starName }}">
+        <ion-img class="vlive-log" src="../../assets/vlive-logo.png"></ion-img>
+      </ion-fab-button>
+      <ion-fab-button color="light" routerLink="/sns/twitter/{{ starName }}">
+        <ion-icon class="twitter-icon" name="logo-twitter"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="light" routerLink="/youtube/{{ starName }}">
+        <ion-icon class="youtube-icon" name="logo-youtube"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="light" (click)="openModal()">
+        <ion-icon class="person-icon" name="person"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
   <div class="facebook-users">
     <div class="button-contents">
       <ion-button fill="outline" size="small" *ngFor="let facebook of facebookList | async" [ngClass]="{ 'selected': activatedFacebook == facebook.userName}"

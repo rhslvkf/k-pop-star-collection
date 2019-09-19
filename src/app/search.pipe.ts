@@ -10,8 +10,6 @@ export class SearchPipe implements PipeTransform {
     if (!terms) return items;
 
     return items.filter( it => {
-      console.log('search pipe');
-      console.log(terms);
       // search starName from HomePage
       if(it.name && it.name.toLowerCase().includes(terms.toLowerCase())) {
         return true;

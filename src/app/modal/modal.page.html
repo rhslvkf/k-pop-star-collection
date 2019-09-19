@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+    <ion-title>K-POP Star</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="modal-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
+  <ion-searchbar [(ngModel)]="terms"></ion-searchbar>
+  <ion-item *ngFor="let star of stars | async | search : terms" (click)="parentInit(star.name)">
+    <ion-label>{{ star.name }}</ion-label>
+  </ion-item>
+  <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
+    <ion-icon name="arrow-up"></ion-icon>
+  </ion-button>
+</ion-content>

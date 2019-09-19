@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { IonContent } from '@ionic/angular';
+import { IonContent, ModalController } from '@ionic/angular';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -11,6 +11,7 @@ import { map } from 'rxjs/operators';
 
 import { LoadingService } from '../loading.service';
 import { MyToastService } from '../my-toast.service';
+import { ModalPage } from '../modal/modal.page';
 
 export interface Youtube {
   videoId?: string;
@@ -28,6 +29,7 @@ export interface Youtube {
 export class YoutubePage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   youtubeList: Observable<Youtube[]>
+  starName = "";
   terms = "";
   allSort = true;
   mvSort = false;
@@ -41,17 +43,29 @@ export class YoutubePage implements OnInit {
     private firebaseDB: AngularFireDatabase,
     private loadingService: LoadingService,
     private myToastService: MyToastService,
-    private statusBar: StatusBar
-  ) { }
-  
-  ngOnInit() {
-    this.statusBar.backgroundColorByHexString('#d40000');
+    private statusBar: StatusBar,
+    private modalCtrl: ModalController,
+  ) {
+    activatedRoute.params.subscribe(() => {
+      statusBar.backgroundColorByHexString('#d40000');
 
+      let menuToolbar = document.getElementById('menu-toolbar') as HTMLElement;
+      menuToolbar.classList.remove('home', 'youtube', 'twitter', 'facebook', 'vlive');
+      menuToolbar.classList.add('youtube');
+    });
+  }
+  
+  goSelf(starName: string) {
+    this.starName = starName;
+    this.ngOnInit();
+  }
+
+  ngOnInit() {
     this.loadingService.presentLoading();
 
-    let starName = this.activatedRoute.snapshot.paramMap.get('starName');
+    if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.youtubeList = this.firebaseDB.list<Youtube>(starName, ref => ref.orderByChild('order'))
+    this.youtubeList = this.firebaseDB.list<Youtube>(this.starName, ref => ref.orderByChild('order'))
       .snapshotChanges()
       .pipe(
         map(changes => {
@@ -122,6 +136,20 @@ export class YoutubePage implements OnInit {
       if(this.terms != '') this.terms += '|';
       this.terms += 'dancepractice|dance practice|안무연습|안무 연습';
     }
+  }
+
+  async openModal() {
+    const modal = await this.modalCtrl.create({
+      showBackdrop: true,
+      backdropDismiss: true,
+      cssClass: 'search-star-modal',
+      component: ModalPage,
+      componentProps: {
+        'callParentFunction': this.goSelf.bind(this)
+      }
+    });
+
+    return await modal.present();
   }
 
 }

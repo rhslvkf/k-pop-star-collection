@@ -1,0 +1,27 @@
+ion-header {
+    #menu-toolbar {
+        color: white;
+    }
+
+    .home {
+        --background: lightseagreen;
+    }
+
+    .youtube {
+        --background: red;
+    }
+
+    .twitter {
+        --background: #1da1f2;
+    }
+
+    .facebook {
+        --background: #3b5998;
+    }
+
+    .vlive {
+        --background: #54F7FF;
+        color: #464A5E !important;
+    }
+
+}

@@ -8,6 +8,8 @@ import { map } from 'rxjs/operators';
 import { AngularFireDatabase } from 'angularfire2/database';
 
 import { LoadingService } from '../loading.service';
+import { ModalPage } from '../modal/modal.page';
+import { ModalController } from '@ionic/angular';
 
 export interface Facebook {
   userName: string;
@@ -23,22 +25,35 @@ export interface Facebook {
 export class FacebookPage implements OnInit {
   facebookList: Observable<Facebook[]>
   activatedFacebook: string;
+  starName = '';
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private firebaseDB: AngularFireDatabase,
     private loadingService: LoadingService,
-    private statusBar: StatusBar
-  ) { }
+    private statusBar: StatusBar,
+    private modalCtrl: ModalController
+  ) {
+    activatedRoute.params.subscribe(() => {
+      statusBar.backgroundColorByHexString('#304a80');
+
+      let menuToolbar = document.getElementById('menu-toolbar') as HTMLElement;
+      menuToolbar.classList.remove('home', 'youtube', 'twitter', 'facebook', 'vlive');
+      menuToolbar.classList.add('facebook');
+    });
+  }
+
+  goSelf(starName: string) {
+    this.starName = starName;
+    this.ngOnInit();
+  }
 
   ngOnInit() {
-    this.statusBar.backgroundColorByHexString('#304a80');
-
     this.loadingService.presentLoading();
 
-    let starName = this.activatedRoute.snapshot.paramMap.get('starName');
+    if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.facebookList = this.firebaseDB.list<Facebook>('sns/facebook/' + starName, ref => ref.orderByChild('order'))
+    this.facebookList = this.firebaseDB.list<Facebook>('sns/facebook/' + this.starName, ref => ref.orderByChild('order'))
       .snapshotChanges()
       .pipe(
         map(changes => {
@@ -107,6 +122,20 @@ export class FacebookPage implements OnInit {
     if(window['FB']) {
       delete window['FB'];
     }
+  }
+
+  async openModal() {
+    const modal = await this.modalCtrl.create({
+      showBackdrop: true,
+      backdropDismiss: true,
+      cssClass: 'search-star-modal',
+      component: ModalPage,
+      componentProps: {
+        'callParentFunction': this.goSelf.bind(this)
+      }
+    });
+
+    return await modal.present();
   }
 
 }

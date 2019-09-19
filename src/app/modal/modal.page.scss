@@ -1,0 +1,15 @@
+.header-toolbar {
+    --background: lightseagreen;
+    color: white;
+}
+
+ion-content {
+    .scrollTopBtn {
+        display: none;
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+    }
+}

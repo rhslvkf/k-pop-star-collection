@@ -42,7 +42,11 @@ export class HomePage {
     private activatedRoute: ActivatedRoute
   ) {
     activatedRoute.params.subscribe(() => {
-      this.statusBar.backgroundColorByHexString('#1a9c95');
+      statusBar.backgroundColorByHexString('#1a9c95');
+
+      let menuToolbar = document.getElementById('menu-toolbar') as HTMLElement;
+      menuToolbar.classList.remove('home', 'youtube', 'twitter', 'facebook', 'vlive');
+      menuToolbar.classList.add('home');
     });
 
     loadingService.presentLoading();
