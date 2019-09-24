@@ -6,15 +6,20 @@ import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { LoadingService } from '../loading.service';
-import { MyToastService } from '../my-toast.service';
+import { LoadingService } from '../service/loading.service';
+import { MyToastService } from '../service/my-toast.service';
 import { ModalPage } from '../modal/modal.page';
+import { MenuToolBarService } from '../service/menu-toolbar.service';
+import { MENUS } from '../vo/menus';
+import { SqlStorageService } from '../service/sql-storage.service';
+import { SELECT_UPDATE_DATE_BY_TABLE_NAME, INSERT_YOUTUBE, INSERT_UPDATE_DATE_BY_TABLE_NAME, SELECT_YOUTUBE } from '../vo/query';
+import { Observable } from 'rxjs';
 
 export interface Youtube {
-  videoId?: string;
+  videoId: string;
+  starName?: string;
   title: string;
   thumbnailUrl: string;
   time: string;
@@ -28,7 +33,8 @@ export interface Youtube {
 })
 export class YoutubePage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
-  youtubeList: Observable<Youtube[]>
+  youtubeList: Youtube[] = [];
+  youtubeListObserver: Observable<Youtube[]>;
   starName = "";
   terms = "";
   allSort = true;
@@ -45,36 +51,104 @@ export class YoutubePage implements OnInit {
     private myToastService: MyToastService,
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
+    private menuToolbarService: MenuToolBarService,
+    private sqlStorageService: SqlStorageService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#d40000');
-
-      let menuToolbar = document.getElementById('menu-toolbar') as HTMLElement;
-      menuToolbar.classList.remove('home', 'youtube', 'twitter', 'facebook', 'vlive');
-      menuToolbar.classList.add('youtube');
+      menuToolbarService.changeClass(MENUS.YOUTUBE);
     });
   }
   
   goSelf(starName: string) {
     this.starName = starName;
+    this.youtubeList = [];
+    this.youtubeListObserver = null;
     this.ngOnInit();
   }
 
   ngOnInit() {
-    this.loadingService.presentLoading();
+    // this.loadingService.presentLoading();
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.youtubeList = this.firebaseDB.list<Youtube>(this.starName, ref => ref.orderByChild('order'))
-      .snapshotChanges()
-      .pipe(
-        map(changes => {
-          this.loadingService.dismissLoading();
-          return changes.map(c => ({
-            videoId: c.payload.key, ...c.payload.val()
-          }))
-        })
-      );
+    this.loadData();
+
+    // this.youtubeList = this.firebaseDB.list<Youtube>('youtube/' + this.starName, ref => ref.orderByChild('order'))
+    // .snapshotChanges()
+    // .pipe(
+    //   map(changes => {
+    //     this.loadingService.dismissLoading();
+    //     return changes.map(c => ({
+    //       videoId: c.payload.key, ...c.payload.val()
+    //     }))
+    //   })
+    // );
+  }
+
+  loadData() {
+    this.sqlStorageService.query(SELECT_UPDATE_DATE_BY_TABLE_NAME, ['youtube.' + this.starName]).then(data => {
+      this.getUpdateDateYoutube_FB().then(updateDateFB => {
+        if (data.res.rows.length > 0 && updateDateFB <= data.res.rows.item(0).updateDate) {
+          // firebase db와 일치한 경우
+          this.setYoutube_SL();
+        } else {
+          // firebase db와 일치하지 않은 경우
+          this.syncYoutube_FB_SL(updateDateFB)
+          .then(() => this.setYoutube_SL())
+        }
+      });
+    });
+  }
+
+  setYoutube_SL() {
+    this.sqlStorageService.query(SELECT_YOUTUBE, [this.starName]).then(data => {
+      let dataLength = data.res.rows.length;
+      for(let i = 0; i < dataLength; i++) {
+        let youtube = data.res.rows.item(i);
+        this.youtubeList.push({videoId: youtube.videoId, title: youtube.title, thumbnailUrl: youtube.thumbnailUrl, time: youtube.time, order: youtube.order});
+      }
+    });
+  }
+
+  getUpdateDateYoutube_FB(): Promise<string> {
+    let updateDateFB = this.firebaseDB.object<string>('youtube/updateDate').snapshotChanges().pipe(map(res => res.payload.val()));
+    
+    return new Promise(resolve => {
+      updateDateFB.subscribe(res => {
+        resolve(res);
+      })
+    });
+  }
+
+  syncYoutube_FB_SL(updateDateFB: string) {
+    let completeCount = 0;
+
+    return new Promise(resolve => {
+      this.getYoutube_FB().subscribe(youtubes => {
+        youtubes.forEach(youtube => {
+          this.insertYoutube_SL(youtube)
+          .then(() => this.insertUpdateDateYoutube_SL(updateDateFB))
+          .then(() => {if(youtubes.length == ++completeCount) resolve()});
+        });
+      });
+    });
+  }
+
+  getYoutube_FB() {
+    this.youtubeListObserver = this.firebaseDB.list<Youtube>('youtube/list/' + this.starName, ref => ref.orderByChild('order')).snapshotChanges().pipe(map(changes => {
+      return changes.map(c => ({ videoId: c.payload.key, ...c.payload.val() }))
+    }));
+
+    return this.youtubeListObserver;
+  }
+
+  insertYoutube_SL(youtube: Youtube) {
+    return this.sqlStorageService.query(INSERT_YOUTUBE, [youtube.videoId, this.starName, youtube.order, youtube.thumbnailUrl, youtube.time, youtube.title]);
+  }
+
+  insertUpdateDateYoutube_SL(updateDate: string) {
+    return this.sqlStorageService.query(INSERT_UPDATE_DATE_BY_TABLE_NAME, ['youtube.' + this.starName, updateDate]);
   }
 
   playYoutube(videoId: string) {

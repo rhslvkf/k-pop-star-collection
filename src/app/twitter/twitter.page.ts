@@ -5,17 +5,20 @@ import { LoadingController, IonContent, ModalController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { LoadingService } from '../loading.service';
+import { LoadingService } from '../service/loading.service';
 import { ModalPage } from '../modal/modal.page';
+import { MenuToolBarService } from '../service/menu-toolbar.service';
+import { MENUS } from '../vo/menus';
+import { SqlStorageService } from '../service/sql-storage.service';
+import { SELECT_UPDATE_DATE_BY_TABLE_NAME, INSERT_TWITTER, INSERT_UPDATE_DATE_BY_TABLE_NAME, SELECT_TWITTER } from '../vo/query';
 
 export interface Twitter {
   userName: string;
   tweetName: string;
   timelineUrl: string;
-  order: string;
+  order?: string;
 }
 
 @Component({
@@ -26,7 +29,7 @@ export interface Twitter {
 export class TwitterPage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   isLoading = false;
-  twitterList: Observable<Twitter[]>
+  twitterList: Twitter[] = [];
   activatedTweet: string;
   starName = '';
 
@@ -36,19 +39,20 @@ export class TwitterPage implements OnInit {
     private loadingCtrl: LoadingController,
     private loadingService: LoadingService,
     private statusBar: StatusBar,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private menuToolbarService: MenuToolBarService,
+    private sqlStorageService: SqlStorageService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#1989cf');
 
-      let menuToolbar = document.getElementById('menu-toolbar') as HTMLElement;
-      menuToolbar.classList.remove('home', 'youtube', 'twitter', 'facebook', 'vlive');
-      menuToolbar.classList.add('twitter');
+      menuToolbarService.changeClass(MENUS.TWITTER);
     });
   }
 
   goSelf(starName: string) {
     this.starName = starName;
+    this.twitterList = [];
     this.ngOnInit();
   }
 
@@ -57,19 +61,72 @@ export class TwitterPage implements OnInit {
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.twitterList = this.firebaseDB.list<Twitter>('sns/twitter/' + this.starName, ref => ref.orderByChild('order'))
-      .snapshotChanges()
-      .pipe(
-        map(changes => {
-          return changes.map(c => ({
-            ...c.payload.val()
-          }))
-        })
-      );
-      
-    this.twitterList.subscribe(twitterList => {
-      this.twitterWidgetInit(twitterList[0].timelineUrl, twitterList[0].tweetName);
+    this.loadData();
+  }
+
+  loadData() {
+    this.sqlStorageService.query(SELECT_UPDATE_DATE_BY_TABLE_NAME, ['twitter.' + this.starName]).then(data => {
+      this.getUpdateDateTwitter_FB().then(updateDateFB => {
+        if (data.res.rows.length > 0 && updateDateFB <= data.res.rows.item(0).updateDate) {
+          // firebase db와 일치한 경우
+          this.setTwitter_SL();
+        } else {
+          // firebase db와 일치하지 않은 경우
+          this.syncTwitter_FB_SL(updateDateFB)
+          .then(() => this.setTwitter_SL())
+        }
+      });
     });
+  }
+
+  setTwitter_SL() {
+    this.sqlStorageService.query(SELECT_TWITTER, [this.starName]).then(data => {
+      let dataLength = data.res.rows.length;
+      for(let i = 0; i < dataLength; i++) {
+        let twitter = data.res.rows.item(i);
+        this.twitterList.push({userName: twitter.userName, tweetName: twitter.tweetName, timelineUrl: twitter.timelineUrl});
+
+        if(i == 0) this.twitterWidgetInit(twitter.timelineUrl, twitter.tweetName);
+      }
+    });
+  }
+
+  getUpdateDateTwitter_FB(): Promise<string> {
+    let updateDateFB = this.firebaseDB.object<string>('sns/twitter/updateDate').snapshotChanges().pipe(map(res => res.payload.val()));
+    
+    return new Promise(resolve => {
+      updateDateFB.subscribe(res => {
+        resolve(res);
+      })
+    });
+  }
+
+  syncTwitter_FB_SL(updateDateFB: string) {
+    let completeCount = 0;
+
+    return new Promise(resolve => {
+      this.getTwitter_FB().subscribe(twitters => {
+        twitters.forEach(twitter => {
+          this.insertTwitter_SL(twitter)
+          .then(() => this.insertUpdateDateTwitter_SL(updateDateFB))
+          .then(() => {if(twitters.length == ++completeCount) resolve()});
+        });
+      });
+    });
+  }
+
+  getTwitter_FB() {
+    return this.firebaseDB.list<Twitter>('sns/twitter/list/' + this.starName).snapshotChanges().pipe(map(changes => {
+      return changes.map(c => ({ ...c.payload.val() }))
+    }));
+  }
+
+  insertTwitter_SL(twitter: Twitter) {
+    return this.sqlStorageService.query(INSERT_TWITTER, [twitter.timelineUrl, this.starName, twitter.order, twitter.tweetName, twitter.userName]);
+  }
+
+  insertUpdateDateTwitter_SL(updateDate: string) {
+    return this.sqlStorageService.query(INSERT_UPDATE_DATE_BY_TABLE_NAME, ['twitter.' + this.starName, updateDate]);
   }
 
   twitterWidgetInit(timelineUrl: string, tweetName: string) {

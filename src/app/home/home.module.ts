@@ -8,9 +8,9 @@ import { IonicModule } from '@ionic/angular';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 
-import { FIREBASE_CONFIG } from '../firebase.config';
+import { FIREBASE_CONFIG } from '../config/firebase.config';
 import { HomePage } from './home.page';
-import { PipesModule } from '../pipes.module';
+import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
   imports: [

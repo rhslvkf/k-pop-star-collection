@@ -6,7 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule, NavParams } from '@ionic/angular';
 
 import { ModalPage } from './modal.page';
-import { PipesModule } from '../pipes.module';
+import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
   imports: [

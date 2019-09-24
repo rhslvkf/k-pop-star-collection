@@ -5,14 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TwitterPage } from './twitter.page';
-import { PipesModule } from '../pipe/pipes.module';
-import { ModalPageModule } from '../modal/modal.module';
+import { YoutubePage } from './youtube.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: TwitterPage
+    component: YoutubePage
   }
 ];
 
@@ -21,10 +19,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes),
-    PipesModule,
-    ModalPageModule
+    RouterModule.forChild(routes)
   ],
-  declarations: [TwitterPage]
+  declarations: [YoutubePage]
 })
-export class TwitterPageModule {}
+export class YoutubePageModule {}

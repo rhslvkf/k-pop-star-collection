@@ -11,7 +11,7 @@
 
 <ion-content id="home-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
   <ion-searchbar [(ngModel)]="terms"></ion-searchbar>
-  <ion-card *ngFor="let star of stars | async | search : terms">
+  <ion-card *ngFor="let star of stars | search : terms">
     <ion-card-header>
       <ion-card-title>
         <span>{{ star.name }}</span>

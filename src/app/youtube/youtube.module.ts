@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 
 import { YoutubePage } from './youtube.page';
-import { PipesModule } from '../pipes.module';
+import { PipesModule } from '../pipe/pipes.module';
 import { ModalPageModule } from '../modal/modal.module';
 
 const routes: Routes = [

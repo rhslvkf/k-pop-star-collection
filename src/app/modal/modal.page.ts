@@ -37,7 +37,7 @@ export class ModalPage {
     this.platform.backButton.subscribe(() => {
       this.dismiss();
     });
-    this.stars = this.firebaseDB.list<Star>('stars', ref => ref.orderByChild('order'))
+    this.stars = this.firebaseDB.list<Star>('stars/list', ref => ref.orderByChild('order'))
       .snapshotChanges()
       .pipe(
         map(changes => {

@@ -3,12 +3,13 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomePageModule) },
-  { path: 'list', loadChildren: () => import('./list/list.module').then(m => m.ListPageModule) },
-  { path: 'youtube/:starName', loadChildren: './youtube/youtube.module#YoutubePageModule', runGuardsAndResolvers: 'always' },
+  { path: 'home', loadChildren: './home/home.module#HomePageModule' },
+  { path: 'youtube/:starName', loadChildren: './youtube/youtube.module#YoutubePageModule' },
   { path: 'sns/twitter/:starName', loadChildren: './twitter/twitter.module#TwitterPageModule' },
   { path: 'sns/facebook/:starName', loadChildren: './facebook/facebook.module#FacebookPageModule' },
-  { path: 'vlive/:starName', loadChildren: './vlive/vlive.module#VlivePageModule' }
+  { path: 'vlive/:starName', loadChildren: './vlive/vlive.module#VlivePageModule' },
+  { path: 'favorites/star', loadChildren: './favorites/star/star.module#StarPageModule' },
+  { path: 'favorites/youtube', loadChildren: './favorites/youtube/youtube.module#YoutubePageModule' }
 ];
 
 @NgModule({
