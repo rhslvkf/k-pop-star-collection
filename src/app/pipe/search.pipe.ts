@@ -10,22 +10,21 @@ export class SearchPipe implements PipeTransform {
     if (!terms) return items;
 
     return items.filter( it => {
-      // search starName from HomePage
+      // search starName from favorite/starPage
       if(it.name && it.name.toLowerCase().includes(terms.toLowerCase())) {
         return true;
       }
 
-      // search youtubeTitle from YoutubePage
-      let result = false;
       let termsArray = terms.split('|');
-      for(let i = 0; i < termsArray.length; i++) {
-        if(it.title && it.title.toLowerCase().includes(termsArray[i].toLowerCase())) {
-          result = true;
-          break;
+      if(termsArray[0] == 'starName') {
+        // search youtubeStar from favorite/youtubePage
+        if(termsArray.length == 1) return true;
+        for(let i = 1; i < termsArray.length; i++) {
+          if(it.starName.toLowerCase().includes(termsArray[i].toLocaleLowerCase())) {
+            return true;
+          }
         }
       }
-      
-      return result;
     });
   }
 

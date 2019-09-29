@@ -1,0 +1,94 @@
+.header-toolbar {
+    --background: #8e38ff;
+    color: white;
+}
+
+ion-content {
+    --background: #ebebeb;
+    --padding-top: 3px;
+    text-align: center;
+
+    div.no-favorite {
+        position: relative;
+        width: 100%;
+        height: 100%;
+
+        div {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            width: 100%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+    }
+
+    .youtube-sort {
+        overflow-x: scroll;
+        overflow-y: hidden;
+    
+        .button-contents {
+            white-space: nowrap;
+    
+            ion-button {
+                --border-color: #8e38ff;
+                --color: #8e38ff;
+            }
+    
+            ion-button.selected {
+                --background: #8e38ff;
+                --color: white;
+            }
+        }
+    }
+
+    .youtube-content {
+        margin: 3px;
+        width: 155px;
+        display: inline-block;
+        text-align: left;
+    
+        ion-card-header {
+            padding: 5px 10px;
+            height: 42px;
+            background: #8e38ff;
+            border-top: 1px solid #ebebeb;
+        }
+        
+        ion-card-subtitle {
+            font-size: 12px;
+            display: -webkit-box;
+            line-height: 17px;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            color: white;
+        }
+    
+        .youtube-time {
+            position: absolute;
+            right: 0;
+            bottom: 42px;
+            background-color: black;
+            padding: 1px 4px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .favorite {
+            position: absolute;
+            right: 5px;
+            top: 2px;
+            font-size: 20px;
+            color: red;
+        }
+    }
+
+    .scrollTopBtn {
+        display: none;
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+    }
+}

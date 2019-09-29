@@ -1,18 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { LoadingController, IonContent, ModalController } from '@ionic/angular';
+import { IonContent, ModalController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
-import { AngularFireDatabase } from 'angularfire2/database';
-import { map } from 'rxjs/operators';
 
 import { LoadingService } from '../service/loading.service';
 import { ModalPage } from '../modal/modal.page';
 import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
-import { SELECT_UPDATE_DATE_BY_TABLE_NAME, INSERT_TWITTER, INSERT_UPDATE_DATE_BY_TABLE_NAME, SELECT_TWITTER } from '../vo/query';
+import { SELECT_TWITTER } from '../vo/query';
 
 export interface Twitter {
   userName: string;
@@ -35,8 +32,6 @@ export class TwitterPage implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private firebaseDB: AngularFireDatabase,
-    private loadingCtrl: LoadingController,
     private loadingService: LoadingService,
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
@@ -61,26 +56,13 @@ export class TwitterPage implements OnInit {
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.loadData();
-  }
-
-  loadData() {
-    this.sqlStorageService.query(SELECT_UPDATE_DATE_BY_TABLE_NAME, ['twitter.' + this.starName]).then(data => {
-      this.getUpdateDateTwitter_FB().then(updateDateFB => {
-        if (data.res.rows.length > 0 && updateDateFB <= data.res.rows.item(0).updateDate) {
-          // firebase db와 일치한 경우
-          this.setTwitter_SL();
-        } else {
-          // firebase db와 일치하지 않은 경우
-          this.syncTwitter_FB_SL(updateDateFB)
-          .then(() => this.setTwitter_SL())
-        }
-      });
-    });
+    this.setTwitter_SL();
   }
 
   setTwitter_SL() {
+    console.log('setTwitter_SL');
     this.sqlStorageService.query(SELECT_TWITTER, [this.starName]).then(data => {
+      console.log('select_twitter', data);
       let dataLength = data.res.rows.length;
       for(let i = 0; i < dataLength; i++) {
         let twitter = data.res.rows.item(i);
@@ -91,45 +73,8 @@ export class TwitterPage implements OnInit {
     });
   }
 
-  getUpdateDateTwitter_FB(): Promise<string> {
-    let updateDateFB = this.firebaseDB.object<string>('sns/twitter/updateDate').snapshotChanges().pipe(map(res => res.payload.val()));
-    
-    return new Promise(resolve => {
-      updateDateFB.subscribe(res => {
-        resolve(res);
-      })
-    });
-  }
-
-  syncTwitter_FB_SL(updateDateFB: string) {
-    let completeCount = 0;
-
-    return new Promise(resolve => {
-      this.getTwitter_FB().subscribe(twitters => {
-        twitters.forEach(twitter => {
-          this.insertTwitter_SL(twitter)
-          .then(() => this.insertUpdateDateTwitter_SL(updateDateFB))
-          .then(() => {if(twitters.length == ++completeCount) resolve()});
-        });
-      });
-    });
-  }
-
-  getTwitter_FB() {
-    return this.firebaseDB.list<Twitter>('sns/twitter/list/' + this.starName).snapshotChanges().pipe(map(changes => {
-      return changes.map(c => ({ ...c.payload.val() }))
-    }));
-  }
-
-  insertTwitter_SL(twitter: Twitter) {
-    return this.sqlStorageService.query(INSERT_TWITTER, [twitter.timelineUrl, this.starName, twitter.order, twitter.tweetName, twitter.userName]);
-  }
-
-  insertUpdateDateTwitter_SL(updateDate: string) {
-    return this.sqlStorageService.query(INSERT_UPDATE_DATE_BY_TABLE_NAME, ['twitter.' + this.starName, updateDate]);
-  }
-
   twitterWidgetInit(timelineUrl: string, tweetName: string) {
+    console.log(timelineUrl, tweetName);
     this.loadingService.presentLoading();
 
     this.activatedTweet = tweetName;
@@ -171,26 +116,6 @@ export class TwitterPage implements OnInit {
     if(document.getElementById(id)) {
       document.getElementById(id).remove();
     }
-  }
-
-  presentLoading() {
-    if(this.isLoading) return;
-
-    this.isLoading = true;
-
-    this.loadingCtrl.create({
-      message: 'Please wait...'
-    }).then((res) => {
-      res.present();
-      if(!this.isLoading) {
-        res.dismiss();
-      }
-    });
-  }
-
-  dismissLoading() {
-    this.isLoading = false;
-    this.loadingCtrl.dismiss().catch(e => {});
   }
 
   scrollToTop() {

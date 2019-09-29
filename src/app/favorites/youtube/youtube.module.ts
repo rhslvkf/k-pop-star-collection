@@ -4,8 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
+import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 
 import { YoutubePage } from './youtube.page';
+import { PipesModule } from 'src/app/pipe/pipes.module';
 
 const routes: Routes = [
   {
@@ -19,8 +21,10 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    PipesModule
   ],
-  declarations: [YoutubePage]
+  declarations: [YoutubePage],
+  providers: [YoutubeVideoPlayer]
 })
 export class YoutubePageModule {}

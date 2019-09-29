@@ -29,6 +29,7 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
+
   <div class="youtube-sort">
     <div class="button-contents">
       <ion-button fill="outline" size="small" [ngClass]="{ 'selected': allSort }" (click)="youtubeSorting('ALL')">All</ion-button>
@@ -38,29 +39,22 @@
       <ion-button fill="outline" size="small" [ngClass]="{ 'selected': dancePracticeSort }" (click)="youtubeSorting('DancePractice')">DancePractice</ion-button>
     </div>
   </div>
-  <ng-container *ngIf="youtubeListObserver">
-    <div>youtubeListObserver</div>
-    <ion-card class="youtube-content" *ngFor="let youtube of youtubeListObserver | async | search : terms" (click)="playYoutube(youtube.videoId)">
-      <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
-      <span class="youtube-time">{{ youtube.time }}</span>
-      <span class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
-      <ion-card-header>
-        <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
-      </ion-card-header>
-    </ion-card>
-  </ng-container>
-  <ng-container *ngIf="!youtubeListObserver">
-    <div>!youtubeListObserver</div>
-    <ion-card class="youtube-content" *ngFor="let youtube of youtubeList | search : terms" (click)="playYoutube(youtube.videoId)">
-      <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
-      <span class="youtube-time">{{ youtube.time }}</span>
-      <span class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
-      <ion-card-header>
-        <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
-      </ion-card-header>
-    </ion-card>
-  </ng-container>
+
+  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList" (click)="playYoutube(youtube.videoId)">
+    <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
+    <span class="youtube-time">{{ youtube.time }}</span>
+    <span *ngIf="!youtube.favoriteFlag" class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
+    <span *ngIf="youtube.favoriteFlag" class="favorite" (click)="removeFavorite(youtube.videoId, $event)"><ion-icon name="star"></ion-icon></span>
+    <ion-card-header>
+      <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>
   </ion-button>
+
+  <ion-infinite-scroll (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

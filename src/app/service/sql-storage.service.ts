@@ -15,34 +15,33 @@ export class SqlStorageService {
     private sqlite: SQLite
   ) { }
 
-  initSQL(): Promise<any> {
-    return new Promise((resolve) => {
-      this.sqlite.deleteDatabase({name: this.DB_NAME, location: 'default'});
-      this.sqlite.create({
-        name: this.DB_NAME, location: 'default'
-      }).then((db: SQLiteObject) => {
-        this.storage = db;
-        this.query(CREATE_TABLE_UPDATE_STATUS)
-        .then(() => this.query(CREATE_TABLE_STARS))
-        .then(() => this.query(CREATE_TABLE_STAR_SITES))
-        .then(() => this.query(CREATE_TABLE_YOUTUBE))
-        .then(() => this.query(CREATE_TABLE_TWITTER))
-        .then(() => this.query(CREATE_TABLE_FACEBOOK))
-        .then(() => this.query(CREATE_TABLE_VLIVE))
-        .then(() => resolve());
-      });
+  async initSQL(): Promise<any> {
+    // await this.sqlite.deleteDatabase({name: this.DB_NAME, location: 'default'});
+    await this.sqlite.create({name: this.DB_NAME, location: 'default'}).then(async (db: SQLiteObject) => {
+      this.storage = db;
+      return await this.createTables();
     });
+  }
+
+  async createTables(): Promise<any> {
+    await this.query(CREATE_TABLE_UPDATE_STATUS);
+    await this.query(CREATE_TABLE_STARS);
+    await this.query(CREATE_TABLE_STAR_SITES);
+    await this.query(CREATE_TABLE_YOUTUBE);
+    await this.query(CREATE_TABLE_TWITTER);
+    await this.query(CREATE_TABLE_FACEBOOK);
+    return await this.query(CREATE_TABLE_VLIVE);
   }
 
   query(query: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
         this.storage.transaction((tx: any) => {
-            tx.executeSql(query, params,
-              (tx: any, res: any) => resolve({ tx: tx, res: res }),
-              (tx: any, err: any) => reject({ tx: tx, err: err }));
-          },
-          (err: any) => reject({ err: err }));
+          tx.executeSql(query, params,
+            (tx: any, res: any) => resolve({ tx: tx, res: res }),
+            (tx: any, err: any) => reject({ tx: tx, err: err }));
+        },
+        (err: any) => reject({ err: err }));
       } catch (err) {
         reject({ err: err });
       }

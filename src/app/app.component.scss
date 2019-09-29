@@ -23,6 +23,10 @@ ion-header {
         --background: #54F7FF;
         color: #464A5E !important;
     }
+
+    .favorite {
+        --background: #8e38ff;
+    }
 }
 
 ion-content {
@@ -44,11 +48,19 @@ ion-content {
         padding-left: 20px;
     }
 
-    .active {
+    .home.active {
         color: lightseagreen;
 
         ion-icon {
             color: lightseagreen;
+        }
+    }
+
+    .favorite.active {
+        color: #8e38ff;
+
+        ion-icon {
+            color: #8e38ff;
         }
     }
 }

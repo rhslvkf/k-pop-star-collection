@@ -10,7 +10,6 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { FIREBASE_CONFIG } from '../config/firebase.config';
 import { HomePage } from './home.page';
-import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
   imports: [
@@ -24,8 +23,7 @@ import { PipesModule } from '../pipe/pipes.module';
       }
     ]),
     AngularFireModule.initializeApp(FIREBASE_CONFIG),
-    AngularFireDatabaseModule,
-    PipesModule
+    AngularFireDatabaseModule
   ],
   declarations: [HomePage]
 })

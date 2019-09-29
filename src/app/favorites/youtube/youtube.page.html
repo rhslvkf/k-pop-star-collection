@@ -1,14 +1,36 @@
 <ion-header>
-    <ion-toolbar class="header-toolbar">
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>
-        Youtube
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Favorite - Youtube
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content>
-
+<ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
+  <div *ngIf="noFavoriteContents" class="no-favorite ion-text-center">
+    <div>
+      There are no favorites.<br/>
+      <ion-button color="tertiary" routerLink="/home" replaceUrl>Home</ion-button>
+    </div>
+  </div>
+  <div *ngIf="starNameList.length > 0" class="youtube-sort">
+    <div class="button-contents">
+      <ion-button class="all selected" fill="outline" size="small" (click)="youtubeSorting('ALL')">ALL</ion-button>
+      <ion-button *ngFor="let name of starNameList; let i = index" class="starName" [ngClass]="'index' + i" fill="outline" size="small" (click)="youtubeSorting(name, i)">{{ name }}</ion-button>
+    </div>
+  </div>
+  <ion-card class="youtube-content" [attr.data-id]="youtube.videoId" *ngFor="let youtube of youtubeList | search : terms" (click)="playYoutube(youtube.videoId)">
+    <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
+    <span class="youtube-time">{{ youtube.time }}</span>
+    <span class="favorite" (click)="removeFavorite(youtube.videoId, $event)"><ion-icon name="star"></ion-icon></span>
+    <ion-card-header>
+      <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+  <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
+    <ion-icon name="arrow-up"></ion-icon>
+  </ion-button>
 </ion-content>

@@ -10,12 +10,14 @@
 </ion-header>
 
 <ion-content id="home-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
-  <ion-searchbar [(ngModel)]="terms"></ion-searchbar>
-  <ion-card *ngFor="let star of stars | search : terms">
+  <ion-searchbar [(ngModel)]="term" debounce="500" (ionChange)="search()"></ion-searchbar>
+
+  <ion-card *ngFor="let star of stars">
     <ion-card-header>
       <ion-card-title>
         <span>{{ star.name }}</span>
-        <span class="favorite" (click)="addFavorite(star.name)"><ion-icon name="star-outline"></ion-icon></span>
+        <span *ngIf="!star.favoriteFlag" class="favorite" (click)="addFavorite(star.name)"><ion-icon name="star-outline"></ion-icon></span>
+        <span *ngIf="star.favoriteFlag" class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="star"></ion-icon></span>
       </ion-card-title>
     </ion-card-header>
     <ion-card-content *ngIf="star.sites">
@@ -38,7 +40,12 @@
       </ion-col>
     </ion-row>
   </ion-card>
+
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>
   </ion-button>
+
+  <ion-infinite-scroll (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

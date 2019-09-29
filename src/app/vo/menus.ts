@@ -3,5 +3,6 @@ export const MENUS = {
     YOUTUBE: 'youtube',
     TWITTER: 'twitter',
     FACEBOOK: 'facebook',
-    VLIVE: 'vlive'
+    VLIVE: 'vlive',
+    FAVORITE: 'favorite'
 }

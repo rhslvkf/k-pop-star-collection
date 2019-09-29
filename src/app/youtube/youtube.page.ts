@@ -1,30 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { IonContent, ModalController } from '@ionic/angular';
+import { IonContent, ModalController, IonInfiniteScroll } from '@ionic/angular';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
-import { AngularFireDatabase } from 'angularfire2/database';
-import { map } from 'rxjs/operators';
-
-import { LoadingService } from '../service/loading.service';
 import { MyToastService } from '../service/my-toast.service';
 import { ModalPage } from '../modal/modal.page';
 import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
-import { SELECT_UPDATE_DATE_BY_TABLE_NAME, INSERT_YOUTUBE, INSERT_UPDATE_DATE_BY_TABLE_NAME, SELECT_YOUTUBE } from '../vo/query';
-import { Observable } from 'rxjs';
-
-export interface Youtube {
-  videoId: string;
-  starName?: string;
-  title: string;
-  thumbnailUrl: string;
-  time: string;
-  order: string;
-}
+import { UPDATE_FAVORITE_YOUTUBE } from '../vo/query';
+import { Youtube } from '../vo/youtube';
 
 @Component({
   selector: 'app-youtube',
@@ -33,21 +20,25 @@ export interface Youtube {
 })
 export class YoutubePage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
+  @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   youtubeList: Youtube[] = [];
-  youtubeListObserver: Observable<Youtube[]>;
   starName = "";
-  terms = "";
   allSort = true;
   mvSort = false;
   fanCamSort = false;
   stageMixSort = false;
   dancePracticeSort = false;
 
+  youtubeCount = 0;
+  offset = 0;
+  limit = 20;
+
+  selectQuery: string;
+  countQuery: string;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private youtube: YoutubeVideoPlayer,
-    private firebaseDB: AngularFireDatabase,
-    private loadingService: LoadingService,
     private myToastService: MyToastService,
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
@@ -63,92 +54,41 @@ export class YoutubePage implements OnInit {
   goSelf(starName: string) {
     this.starName = starName;
     this.youtubeList = [];
-    this.youtubeListObserver = null;
     this.ngOnInit();
   }
 
   ngOnInit() {
-    // this.loadingService.presentLoading();
-
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.loadData();
-
-    // this.youtubeList = this.firebaseDB.list<Youtube>('youtube/' + this.starName, ref => ref.orderByChild('order'))
-    // .snapshotChanges()
-    // .pipe(
-    //   map(changes => {
-    //     this.loadingService.dismissLoading();
-    //     return changes.map(c => ({
-    //       videoId: c.payload.key, ...c.payload.val()
-    //     }))
-    //   })
-    // );
+    this.setYoutube_SL();
   }
 
-  loadData() {
-    this.sqlStorageService.query(SELECT_UPDATE_DATE_BY_TABLE_NAME, ['youtube.' + this.starName]).then(data => {
-      this.getUpdateDateYoutube_FB().then(updateDateFB => {
-        if (data.res.rows.length > 0 && updateDateFB <= data.res.rows.item(0).updateDate) {
-          // firebase db와 일치한 경우
-          this.setYoutube_SL();
-        } else {
-          // firebase db와 일치하지 않은 경우
-          this.syncYoutube_FB_SL(updateDateFB)
-          .then(() => this.setYoutube_SL())
-        }
-      });
-    });
-  }
-
-  setYoutube_SL() {
-    this.sqlStorageService.query(SELECT_YOUTUBE, [this.starName]).then(data => {
+  pushYoutube(query: string) {
+    this.sqlStorageService.query(query).then(data => {
       let dataLength = data.res.rows.length;
       for(let i = 0; i < dataLength; i++) {
         let youtube = data.res.rows.item(i);
-        this.youtubeList.push({videoId: youtube.videoId, title: youtube.title, thumbnailUrl: youtube.thumbnailUrl, time: youtube.time, order: youtube.order});
+        this.youtubeList.push({videoId: youtube.videoId, title: youtube.title, thumbnailUrl: youtube.thumbnailUrl, time: youtube.time, order: youtube.order, favoriteFlag: youtube.favoriteFlag});
       }
     });
   }
 
-  getUpdateDateYoutube_FB(): Promise<string> {
-    let updateDateFB = this.firebaseDB.object<string>('youtube/updateDate').snapshotChanges().pipe(map(res => res.payload.val()));
-    
-    return new Promise(resolve => {
-      updateDateFB.subscribe(res => {
-        resolve(res);
-      })
-    });
+  async setYoutubeCount(query: string) {
+    let data = await this.sqlStorageService.query(query);
+    this.youtubeCount = data.res.rows.item(0).youtubeCount;
   }
 
-  syncYoutube_FB_SL(updateDateFB: string) {
-    let completeCount = 0;
+  setYoutube_SL() {
+    this.youtubeList = [];
+    this.offset = 0;
+    let countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
+    let selectQuery = `SELECT * FROM youtube WHERE starName = '${this.starName}' ORDER BY \`order\` ASC`;
 
-    return new Promise(resolve => {
-      this.getYoutube_FB().subscribe(youtubes => {
-        youtubes.forEach(youtube => {
-          this.insertYoutube_SL(youtube)
-          .then(() => this.insertUpdateDateYoutube_SL(updateDateFB))
-          .then(() => {if(youtubes.length == ++completeCount) resolve()});
-        });
-      });
-    });
-  }
+    this.setYoutubeCount(countQuery);
+    this.pushYoutube(selectQuery + ` LIMIT ${this.offset}, ${this.limit}`);
 
-  getYoutube_FB() {
-    this.youtubeListObserver = this.firebaseDB.list<Youtube>('youtube/list/' + this.starName, ref => ref.orderByChild('order')).snapshotChanges().pipe(map(changes => {
-      return changes.map(c => ({ videoId: c.payload.key, ...c.payload.val() }))
-    }));
-
-    return this.youtubeListObserver;
-  }
-
-  insertYoutube_SL(youtube: Youtube) {
-    return this.sqlStorageService.query(INSERT_YOUTUBE, [youtube.videoId, this.starName, youtube.order, youtube.thumbnailUrl, youtube.time, youtube.title]);
-  }
-
-  insertUpdateDateYoutube_SL(updateDate: string) {
-    return this.sqlStorageService.query(INSERT_UPDATE_DATE_BY_TABLE_NAME, ['youtube.' + this.starName, updateDate]);
+    this.countQuery = countQuery;
+    this.selectQuery = selectQuery;
   }
 
   playYoutube(videoId: string) {
@@ -170,7 +110,24 @@ export class YoutubePage implements OnInit {
 
   addFavorite(videoId: string, event: Event) {
     event.stopPropagation();
-    this.myToastService.showToast('Added to favorites.');
+    this.myToastService.showToast('Added to favorites');
+
+    for(let i = 0; i < this.youtubeList.length; i++) {
+      if(this.youtubeList[i].videoId == videoId) this.youtubeList[i].favoriteFlag = true;
+    }
+
+    this.sqlStorageService.query(UPDATE_FAVORITE_YOUTUBE, [1, videoId]);
+  }
+
+  removeFavorite(videoId: string, event: Event) {
+    event.stopPropagation();
+    this.myToastService.showToast('Removed from your favorites');
+
+    for(let i = 0; i < this.youtubeList.length; i++) {
+      if(this.youtubeList[i].videoId == videoId) this.youtubeList[i].favoriteFlag = false;
+    }
+
+    this.sqlStorageService.query(UPDATE_FAVORITE_YOUTUBE, [0, videoId]);
   }
 
   youtubeSorting(terms: string) {
@@ -195,21 +152,59 @@ export class YoutubePage implements OnInit {
       this.allSort = true;
     }
 
-    this.terms = '';
+    let words: string[] = [];
 
-    if(this.mvSort) this.terms += 'MV|M/V';
+    if(this.mvSort) {
+      words.push('MV');
+      words.push('M/V');
+    }
     if(this.fanCamSort) {
-      if(this.terms != '') this.terms += '|';
-      this.terms += 'fancam|fan cam|직캠';
+      words.push('fancam');
+      words.push('fan cam');
+      words.push('직캠');
     }
     if(this.stageMixSort) {
-      if(this.terms != '') this.terms += '|';
-      this.terms += 'stagemix|stage mix|교차편집|교차 편집';
+      words.push('stagemix');
+      words.push('stage mix');
+      words.push('교차편집');
+      words.push('교차 편집');
     }
     if(this.dancePracticeSort) {
-      if(this.terms != '') this.terms += '|';
-      this.terms += 'dancepractice|dance practice|안무연습|안무 연습';
+      words.push('dancepractice');
+      words.push('dance practice');
+      words.push('안무연습');
+      words.push('안무 연습');
     }
+
+    let countQuery = "";
+    let selectQuery = "";
+    if(this.allSort) {
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
+      selectQuery = `SELECT * FROM youtube WHERE starName = '${this.starName}' ORDER BY \`order\` ASC`;
+    } else {
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}' AND (`;
+      selectQuery = `SELECT * FROM youtube WHERE starName = '${this.starName}' AND (`;
+      for (let i = 0; i < words.length; i++) {
+        if(i != 0) {
+          countQuery += ' OR ';
+          selectQuery += ' OR ';
+        }
+        countQuery += `title LIKE '%${words[i]}%'`;
+        selectQuery += `title LIKE '%${words[i]}%'`;
+      }
+      countQuery += ')';
+      selectQuery += `) ORDER BY \`order\` ASC`;
+    }
+
+    this.infiniteScroll.disabled = false;
+
+    this.youtubeList = [];
+    this.offset = 0;
+    this.setYoutubeCount(countQuery);
+    this.pushYoutube(selectQuery + ` LIMIT ${this.offset}, ${this.limit}`);
+
+    this.countQuery = countQuery;
+    this.selectQuery = selectQuery;
   }
 
   async openModal() {
@@ -224,6 +219,17 @@ export class YoutubePage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  loadData(event) {
+    setTimeout(() => {
+      this.offset += this.limit;
+      this.pushYoutube(this.selectQuery + ` LIMIT ${this.offset}, ${this.limit}`);
+      if(this.offset + this.limit >= this.youtubeCount) {
+        event.target.disabled = true;
+      }
+      event.target.complete();
+    }, 500);
   }
 
 }
