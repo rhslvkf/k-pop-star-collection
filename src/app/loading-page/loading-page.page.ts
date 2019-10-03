@@ -7,6 +7,7 @@ import { YoutubeService } from '../service/sql/youtube.service';
 import { TwitterService } from '../service/sql/twitter.service';
 import { FacebookService } from '../service/sql/facebook.service';
 import { VliveService } from '../service/sql/vlive.service';
+import { AppService } from '../service/sql/app.service';
 
 @Component({
   selector: 'app-loading-page',
@@ -23,7 +24,8 @@ export class LoadingPagePage {
     private youtubeService: YoutubeService,
     private twitterService: TwitterService,
     private facebookService: FacebookService,
-    private vliveService: VliveService
+    private vliveService: VliveService,
+    private appService: AppService
   ) {
     this.loading();
   }
@@ -40,6 +42,8 @@ export class LoadingPagePage {
     await this.facebookService.syncFacebookTable();
     this.progress = '0.8';
     await this.vliveService.syncVliveTable();
+    this.progress = '0.9';
+    await this.appService.syncAppTable();
     this.progress = '1';
     await this.router.navigateByUrl('/home', {replaceUrl: true});
   }

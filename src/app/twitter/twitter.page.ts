@@ -10,6 +10,7 @@ import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
 import { SELECT_TWITTER } from '../vo/query';
+import { EmailService } from '../service/email.service';
 
 export interface Twitter {
   userName: string;
@@ -36,7 +37,8 @@ export class TwitterPage implements OnInit {
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
-    private sqlStorageService: SqlStorageService
+    private sqlStorageService: SqlStorageService,
+    private emailService: EmailService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#1989cf');
@@ -60,21 +62,18 @@ export class TwitterPage implements OnInit {
   }
 
   setTwitter_SL() {
-    console.log('setTwitter_SL');
     this.sqlStorageService.query(SELECT_TWITTER, [this.starName]).then(data => {
-      console.log('select_twitter', data);
       let dataLength = data.res.rows.length;
       for(let i = 0; i < dataLength; i++) {
         let twitter = data.res.rows.item(i);
         this.twitterList.push({userName: twitter.userName, tweetName: twitter.tweetName, timelineUrl: twitter.timelineUrl});
 
-        if(i == 0) this.twitterWidgetInit(twitter.timelineUrl, twitter.tweetName);
+        if(i == 0) this.twitterWidgetInit(twitter.timelineUrl, twitter.tweetName, twitter.userName);
       }
     });
   }
 
-  twitterWidgetInit(timelineUrl: string, tweetName: string) {
-    console.log(timelineUrl, tweetName);
+  twitterWidgetInit(timelineUrl: string, tweetName: string, userName: string) {
     this.loadingService.presentLoading();
 
     this.activatedTweet = tweetName;
@@ -105,11 +104,33 @@ export class TwitterPage implements OnInit {
         clearInterval(interval);
         this.loadingService.dismissLoading();
       }
+      if(document.querySelector('.twitter-timeline-error')) {
+        clearInterval(interval);
+        this.loadingService.dismissLoading();
+
+        let subject = 'Request modification';
+        let body = `Can't connect to <b>${userName}</b> Twitter`;
+        let div = document.createElement('div');
+        div.innerHTML = body;
+        let button = document.createElement('ion-button');
+        button.innerHTML = '<ion-icon name="send"></ion-icon>' + subject;
+        button.onclick = () => {
+          this.emailService.sendEmail(subject, body);
+        };
+        document.querySelector('#twitter-error').appendChild(div);
+        document.querySelector('#twitter-error').appendChild(button);
+      }
     }, 300);
   }
 
   removeTwitterWidget() {
     if(document.querySelector('[id^="twitter-widget"]')) document.querySelector('[id^="twitter-widget"]').remove();
+
+    if(document.querySelector('.twitter-timeline-error')) document.querySelector('.twitter-timeline-error').remove();
+    let twitterError = document.querySelector('#twitter-error');
+    while(twitterError.hasChildNodes()) {
+      twitterError.removeChild(twitterError.firstChild);
+    }
   }
 
   removeElementById(id: string) {

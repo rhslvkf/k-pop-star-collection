@@ -6,7 +6,7 @@ import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
-import { SELECT_FAVORITE_YOUTUBE, UPDATE_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_STAR_NAME } from 'src/app/vo/query';
+import { SELECT_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_STAR_NAME, DELETE_FAVORITE_YOUTUBE } from 'src/app/vo/query';
 import { Youtube } from 'src/app/vo/youtube';
 import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
@@ -89,7 +89,7 @@ export class YoutubePage {
       }
     }
 
-    this.sqlStorageService.query(UPDATE_FAVORITE_YOUTUBE, [0, videoId]);
+    this.sqlStorageService.query(DELETE_FAVORITE_YOUTUBE, [videoId]);
   }
 
   youtubeSorting(name: string, index: number) {

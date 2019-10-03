@@ -10,6 +10,7 @@ import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
 import { SELECT_FACEBOOK } from '../vo/query';
+import { EmailService } from '../service/email.service';
 
 export interface Facebook {
   userName: string;
@@ -33,7 +34,8 @@ export class FacebookPage implements OnInit {
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
-    private sqlStorageService: SqlStorageService
+    private sqlStorageService: SqlStorageService,
+    private emailService: EmailService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#304a80');
@@ -109,7 +111,29 @@ export class FacebookPage implements OnInit {
     let fjs = document.getElementsByTagName('script')[0];
     fjs.parentNode.insertBefore(js, fjs);
 
-    this.loadingService.dismissLoading();
+    // wait for loading facebook widget and dismiss loading
+    let interval = setInterval(() => {
+      let d = document.querySelector('.fb-page > span') as HTMLElement;
+      if(d && d.style.verticalAlign == 'bottom' && d.offsetHeight > 0) {
+        clearInterval(interval);
+        this.loadingService.dismissLoading();
+      } else if(d && d.style.verticalAlign == 'bottom' && d.offsetHeight == 0) {
+        clearInterval(interval);
+        this.loadingService.dismissLoading();
+
+        let subject = 'Request modification';
+        let body = `Can't connect to <b>${userName}</b> Facebook`;
+        let div = document.createElement('div');
+        div.innerHTML = body;
+        let button = document.createElement('ion-button');
+        button.innerHTML = '<ion-icon name="send"></ion-icon>' + subject;
+        button.onclick = () => {
+          this.emailService.sendEmail(subject, body);
+        };
+        document.querySelector('#facebook-error').appendChild(div);
+        document.querySelector('#facebook-error').appendChild(button);
+      }
+    }, 300);
   }
 
   removeFacebookWidget() {
@@ -121,6 +145,11 @@ export class FacebookPage implements OnInit {
     }
     if(window['FB']) {
       delete window['FB'];
+    }
+
+    let facebookError = document.querySelector('#facebook-error');
+    while(facebookError.hasChildNodes()) {
+      facebookError.removeChild(facebookError.firstChild);
     }
   }
 

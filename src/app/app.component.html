@@ -42,6 +42,20 @@
               <ion-label>Share</ion-label>
             </ion-item>
           </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item lines="none" routerLinkActive="active">
+              <ion-icon slot="start" name="analytics"></ion-icon>
+              <ion-label><a class="rateApp" href="https://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection">Rate App</a></ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item (click)="toDeveloper()" lines="none" routerLinkActive="active">
+              <ion-icon slot="start" name="send"></ion-icon>
+              <ion-label>To developer</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
         </ion-list>
       </ion-content>
     </ion-menu>

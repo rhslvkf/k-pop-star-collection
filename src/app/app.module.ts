@@ -7,6 +7,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SQLite } from '@ionic-native/sqlite/ngx';
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
+import { AppRate } from '@ionic-native/app-rate/ngx';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -32,7 +34,9 @@ import { SqlStorageService } from './service/sql-storage.service';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     SocialSharing,
     SqlStorageService,
-    SQLite
+    SQLite,
+    EmailComposer,
+    AppRate
   ],
   bootstrap: [AppComponent]
 })

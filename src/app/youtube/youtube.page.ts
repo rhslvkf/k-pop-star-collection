@@ -10,7 +10,7 @@ import { ModalPage } from '../modal/modal.page';
 import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
-import { UPDATE_FAVORITE_YOUTUBE } from '../vo/query';
+import { INSERT_FAVORITE_YOUTUBE, DELETE_FAVORITE_YOUTUBE } from '../vo/query';
 import { Youtube } from '../vo/youtube';
 
 @Component({
@@ -28,6 +28,7 @@ export class YoutubePage implements OnInit {
   fanCamSort = false;
   stageMixSort = false;
   dancePracticeSort = false;
+  lyricsSort = false;
 
   youtubeCount = 0;
   offset = 0;
@@ -82,8 +83,7 @@ export class YoutubePage implements OnInit {
     this.youtubeList = [];
     this.offset = 0;
     let countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
-    let selectQuery = `SELECT * FROM youtube WHERE starName = '${this.starName}' ORDER BY \`order\` ASC`;
-
+    let selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY \`order\` ASC`;
     this.setYoutubeCount(countQuery);
     this.pushYoutube(selectQuery + ` LIMIT ${this.offset}, ${this.limit}`);
 
@@ -116,7 +116,7 @@ export class YoutubePage implements OnInit {
       if(this.youtubeList[i].videoId == videoId) this.youtubeList[i].favoriteFlag = true;
     }
 
-    this.sqlStorageService.query(UPDATE_FAVORITE_YOUTUBE, [1, videoId]);
+    this.sqlStorageService.query(INSERT_FAVORITE_YOUTUBE, [videoId]);
   }
 
   removeFavorite(videoId: string, event: Event) {
@@ -127,7 +127,7 @@ export class YoutubePage implements OnInit {
       if(this.youtubeList[i].videoId == videoId) this.youtubeList[i].favoriteFlag = false;
     }
 
-    this.sqlStorageService.query(UPDATE_FAVORITE_YOUTUBE, [0, videoId]);
+    this.sqlStorageService.query(DELETE_FAVORITE_YOUTUBE, [videoId]);
   }
 
   youtubeSorting(terms: string) {
@@ -146,9 +146,12 @@ export class YoutubePage implements OnInit {
     } else if(terms == 'DancePractice') {
       this.dancePracticeSort = !this.dancePracticeSort;
       if(this.allSort) this.allSort = false;
+    } else if(terms == 'Lyrics') {
+      this.lyricsSort = !this.lyricsSort;
+      if(this.allSort) this.allSort = false;
     }
 
-    if(!(this.allSort || this.mvSort || this.fanCamSort || this.stageMixSort || this.dancePracticeSort)) {
+    if(!(this.allSort || this.mvSort || this.fanCamSort || this.stageMixSort || this.dancePracticeSort || this.lyricsSort)) {
       this.allSort = true;
     }
 
@@ -175,15 +178,19 @@ export class YoutubePage implements OnInit {
       words.push('안무연습');
       words.push('안무 연습');
     }
+    if(this.lyricsSort) {
+      words.push('lyrics');
+      words.push('가사')
+    }
 
     let countQuery = "";
     let selectQuery = "";
     if(this.allSort) {
       countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
-      selectQuery = `SELECT * FROM youtube WHERE starName = '${this.starName}' ORDER BY \`order\` ASC`;
+      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY \`order\` ASC`;
     } else {
       countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}' AND (`;
-      selectQuery = `SELECT * FROM youtube WHERE starName = '${this.starName}' AND (`;
+      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' AND (`;
       for (let i = 0; i < words.length; i++) {
         if(i != 0) {
           countQuery += ' OR ';

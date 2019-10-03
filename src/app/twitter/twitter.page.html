@@ -30,12 +30,13 @@
   <div class="tweet-users">
     <div class="button-contents">
       <ion-button fill="outline" size="small" *ngFor="let twitter of twitterList" [ngClass]="{ 'selected': activatedTweet == twitter.tweetName}"
-        (click)="twitterWidgetInit(twitter.timelineUrl, twitter.tweetName)">
+        (click)="twitterWidgetInit(twitter.timelineUrl, twitter.tweetName, twitter.userName)">
         {{ twitter.userName }}
       </ion-button>
     </div>
   </div>
   <div id="twitter-timeline"></div>
+  <div id="twitter-error"></div>
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>
   </ion-button>
