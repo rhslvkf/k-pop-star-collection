@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
 
+import { AdmobfreeService } from './admobfree.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,11 +15,16 @@ export class EmailService {
     isHtml: true
   }
 
-  constructor(private emailComposer: EmailComposer) { }
+  constructor(
+    private emailComposer: EmailComposer,
+    private admobFreeService: AdmobfreeService
+  ) { }
 
-  sendEmail(subject: string, body: string) {
+  async sendEmail(subject: string, body: string) {
     this.email.subject = subject;
     this.email.body = body;
-    this.emailComposer.open(this.email);
+    await this.admobFreeService.removeBannerAd();
+    await this.emailComposer.open(this.email);
+    await this.admobFreeService.showBannerAd();
   }
 }

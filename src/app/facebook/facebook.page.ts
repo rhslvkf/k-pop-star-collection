@@ -27,6 +27,7 @@ export class FacebookPage implements OnInit {
   facebookList: Facebook[] = [];
   activatedFacebook: string;
   starName = '';
+  noFacebook = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -61,6 +62,10 @@ export class FacebookPage implements OnInit {
   setFacebook_SL() {
     this.sqlStorageService.query(SELECT_FACEBOOK, [this.starName]).then(data => {
       let dataLength = data.res.rows.length;
+      if(dataLength == 0) {
+        this.noFacebook = true;
+        this.loadingService.dismissLoading();
+      }
       for(let i = 0; i < dataLength; i++) {
         let facebook = data.res.rows.item(i);
         this.facebookList.push({userName: facebook.userName, timelineUrl: facebook.timelineUrl});

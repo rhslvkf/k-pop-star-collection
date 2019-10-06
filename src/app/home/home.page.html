@@ -26,16 +26,16 @@
       <span *ngIf="star.sites.instagram"><a href="{{ star.sites.instagram }}">Instagram<ion-icon name="open"></ion-icon></a></span>
     </ion-card-content>
     <ion-row>
-      <ion-col routerLink="/youtube/{{ star.name }}">
+      <ion-col routerLink="/youtube/{{ star.name }}" (click)="showInterstitialAd()">
         <ion-icon class="youtube-icon" name="logo-youtube"></ion-icon>
       </ion-col>
-      <ion-col routerLink="/sns/twitter/{{ star.name }}">
+      <ion-col routerLink="/sns/twitter/{{ star.name }}" (click)="showInterstitialAd()">
         <ion-icon class="twitter-icon" name="logo-twitter"></ion-icon>
       </ion-col>
-      <ion-col routerLink="/sns/facebook/{{ star.name }}">
+      <ion-col routerLink="/sns/facebook/{{ star.name }}" (click)="showInterstitialAd()">
         <ion-icon class="facebook-icon" name="logo-facebook"></ion-icon>
       </ion-col>
-      <ion-col routerLink="/vlive/{{ star.name }}">
+      <ion-col routerLink="/vlive/{{ star.name }}" (click)="showInterstitialAd()">
         <ion-img class="vlive-log" src="../../assets/vlive-logo.png"></ion-img>
       </ion-col>
     </ion-row>

@@ -8,6 +8,13 @@
 </ion-header>
 
 <ion-content id="facebook-content" padding>
+  <div *ngIf="noFacebook" class="no-facebook ion-text-center">
+    <div>
+      There are no facebook of {{ starName }}.<br/>
+      <ion-button color="tertiary" routerLink="/home" replaceUrl>Home</ion-button>
+    </div>
+  </div>
+
   <ion-fab vertical="bottom" horizontal="start" slot="fixed">
     <ion-fab-button color="tertiary">
       <ion-icon name="more"></ion-icon>
@@ -27,6 +34,7 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
+
   <div class="facebook-users">
     <div class="button-contents">
       <ion-button fill="outline" size="small" *ngFor="let facebook of facebookList" [ngClass]="{ 'selected': activatedFacebook == facebook.userName}"
@@ -35,6 +43,7 @@
       </ion-button>
     </div>
   </div>
+
   <div id="fb-root"></div>
   <div id="facebook-error"></div>
 </ion-content>

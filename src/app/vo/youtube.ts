@@ -4,6 +4,6 @@ export interface Youtube {
     title: string;
     thumbnailUrl: string;
     time: string;
-    order: string;
-    favoriteFlag: boolean;
+    views?: number;
+    favoriteFlag?: boolean;
 }

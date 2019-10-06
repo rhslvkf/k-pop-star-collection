@@ -55,7 +55,7 @@ export class YoutubePage {
 
       for(let i = 0; i < dataLength; i++) {
         let youtube = data.res.rows.item(i);
-        this.youtubeList.push({videoId: youtube.videoId, title: youtube.title, thumbnailUrl: youtube.thumbnailUrl, time: youtube.time, order: youtube.order, favoriteFlag: youtube.favoriteFlag, starName: youtube.starName});
+        this.youtubeList.push({videoId: youtube.videoId, title: youtube.title, thumbnailUrl: youtube.thumbnailUrl, time: youtube.time, starName: youtube.starName});
       }
     });
   }
@@ -65,7 +65,7 @@ export class YoutubePage {
   }
 
   scrollToTop() {
-    this.ionContent.scrollToTop(500);
+    this.ionContent.scrollToTop(0);
   }
 
   logScrolling() {

@@ -67,7 +67,7 @@ export class StarPage {
   }
 
   scrollToTop() {
-    this.ionContent.scrollToTop(500);
+    this.ionContent.scrollToTop(0);
   }
 
   logScrolling() {

@@ -12,6 +12,7 @@ import { LoadingService } from './service/loading.service';
 import { EmailService } from './service/email.service';
 import { AppService } from './service/sql/app.service';
 import { App } from './vo/app';
+import { AdmobfreeService } from './service/admobfree.service';
 
 @Component({
   selector: 'app-root',
@@ -35,7 +36,8 @@ export class AppComponent {
     private loadingService: LoadingService,
     private emailService: EmailService,
     private appService: AppService,
-    private appRate: AppRate
+    private appRate: AppRate,
+    private admobFreeService: AdmobfreeService
   ) {
     this.backButtonToExit();
 
@@ -100,15 +102,17 @@ export class AppComponent {
     this.appRate.promptForRating(true);
   }
 
-  shareApp() {
+  async shareApp() {
     let message = 'You can enjoy Youtube, SNS of K-POP Stars in one app.';
     let subject = 'K-POP Star Collection';
     let url = 'https://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection';
 
-    this.socialSharing.share(message, subject, '', url);
+    await this.admobFreeService.removeBannerAd();
+    await this.socialSharing.share(message, subject, '', url);
+    await this.admobFreeService.showBannerAd();
   }
 
-  toDeveloper() {
-    this.emailService.sendEmail('', '');
+  async toDeveloper() {
+    await this.emailService.sendEmail('', '');
   }
 }

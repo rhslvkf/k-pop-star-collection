@@ -9,6 +9,7 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SQLite } from '@ionic-native/sqlite/ngx';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
 import { AppRate } from '@ionic-native/app-rate/ngx';
+import { AdMobFree } from '@ionic-native/admob-free/ngx';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -36,7 +37,8 @@ import { SqlStorageService } from './service/sql-storage.service';
     SqlStorageService,
     SQLite,
     EmailComposer,
-    AppRate
+    AppRate,
+    AdMobFree
   ],
   bootstrap: [AppComponent]
 })

@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -11,6 +11,7 @@ import { SqlStorageService } from '../service/sql-storage.service';
 import { MENUS } from '../vo/menus';
 import { SELECT_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS, SELECT_STARS_COUNT, SELECT_STARS_COUNT_BY_NAME, SELECT_STARS_BY_NAME } from '../vo/query';
 import { Star, Site } from '../vo/star';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 @Component({
   selector: 'app-home',
@@ -32,7 +33,9 @@ export class HomePage {
     private activatedRoute: ActivatedRoute,
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
-    private appRate: AppRate
+    private appRate: AppRate,
+    private admobFreeService: AdmobfreeService,
+    private router: Router
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#1a9c95');
@@ -86,7 +89,7 @@ export class HomePage {
   }
 
   scrollToTop() {
-    this.ionContent.scrollToTop(500);
+    this.ionContent.scrollToTop(0);
   }
 
   logScrolling() {
@@ -141,6 +144,10 @@ export class HomePage {
       this.infiniteScroll.disabled = true;
     }
     this.pushStars(SELECT_STARS_BY_NAME, [term, this.offset, this.limit]);
+  }
+
+  showInterstitialAd() {
+    this.admobFreeService.showInterstitialAd();
   }
 
 }

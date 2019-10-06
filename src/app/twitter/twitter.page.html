@@ -8,6 +8,13 @@
 </ion-header>
 
 <ion-content id="tweet-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
+  <div *ngIf="noTwitter" class="no-twitter ion-text-center">
+    <div>
+      There are no twitter of {{ starName }}.<br/>
+      <ion-button color="tertiary" routerLink="/home" replaceUrl>Home</ion-button>
+    </div>
+  </div>
+
   <ion-fab vertical="bottom" horizontal="start" slot="fixed">
     <ion-fab-button color="tertiary">
       <ion-icon name="more"></ion-icon>
@@ -27,6 +34,7 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
+
   <div class="tweet-users">
     <div class="button-contents">
       <ion-button fill="outline" size="small" *ngFor="let twitter of twitterList" [ngClass]="{ 'selected': activatedTweet == twitter.tweetName}"
@@ -35,8 +43,10 @@
       </ion-button>
     </div>
   </div>
+
   <div id="twitter-timeline"></div>
   <div id="twitter-error"></div>
+
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>
   </ion-button>

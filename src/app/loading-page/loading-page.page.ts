@@ -8,6 +8,7 @@ import { TwitterService } from '../service/sql/twitter.service';
 import { FacebookService } from '../service/sql/facebook.service';
 import { VliveService } from '../service/sql/vlive.service';
 import { AppService } from '../service/sql/app.service';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 @Component({
   selector: 'app-loading-page',
@@ -25,25 +26,32 @@ export class LoadingPagePage {
     private twitterService: TwitterService,
     private facebookService: FacebookService,
     private vliveService: VliveService,
-    private appService: AppService
+    private appService: AppService,
+    private admobFreeService: AdmobfreeService
   ) {
     this.loading();
   }
 
   async loading() {
-    await this.sqlStorageService.initSQL();
+    await this.admobFreeService.prepareInterstitialAd();
     this.progress = '0.1';
-    await this.starService.syncStarTable();
+    await this.sqlStorageService.initSQL();
     this.progress = '0.2';
+    await this.starService.syncStarTable();
+    this.progress = '0.3';
     await this.youtubeService.syncYoutubeTable();
     this.progress = '0.4';
     await this.twitterService.syncTwitterTable();
-    this.progress = '0.6';
+    this.progress = '0.5';
     await this.facebookService.syncFacebookTable();
-    this.progress = '0.8';
+    this.progress = '0.6';
     await this.vliveService.syncVliveTable();
-    this.progress = '0.9';
+    this.progress = '0.7';
     await this.appService.syncAppTable();
+    this.progress = '0.8';
+    await this.admobFreeService.showBannerAd();
+    this.progress = '0.9';
+    await this.admobFreeService.showInterstitialAd();
     this.progress = '1';
     await this.router.navigateByUrl('/home', {replaceUrl: true});
   }

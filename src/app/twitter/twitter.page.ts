@@ -30,6 +30,7 @@ export class TwitterPage implements OnInit {
   twitterList: Twitter[] = [];
   activatedTweet: string;
   starName = '';
+  noTwitter = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -64,6 +65,10 @@ export class TwitterPage implements OnInit {
   setTwitter_SL() {
     this.sqlStorageService.query(SELECT_TWITTER, [this.starName]).then(data => {
       let dataLength = data.res.rows.length;
+      if(dataLength == 0) {
+        this.noTwitter = true;
+        this.loadingService.dismissLoading();
+      }
       for(let i = 0; i < dataLength; i++) {
         let twitter = data.res.rows.item(i);
         this.twitterList.push({userName: twitter.userName, tweetName: twitter.tweetName, timelineUrl: twitter.timelineUrl});
@@ -140,7 +145,7 @@ export class TwitterPage implements OnInit {
   }
 
   scrollToTop() {
-    this.ionContent.scrollToTop(500);
+    this.ionContent.scrollToTop(0);
   }
 
   logScrolling() {
