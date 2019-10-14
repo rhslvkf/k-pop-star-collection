@@ -4,13 +4,13 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Youtube
+      Youtube<span *ngIf="starName != 'fullList'"> - {{ starName }}</span>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
-  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+  <ion-fab *ngIf="starName != 'fullList'" vertical="bottom" horizontal="start" slot="fixed">
     <ion-fab-button color="tertiary">
       <ion-icon name="more"></ion-icon>
     </ion-fab-button>

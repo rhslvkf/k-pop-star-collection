@@ -90,8 +90,15 @@ export class YoutubePage implements OnInit {
   setYoutube_SL() {
     this.youtubeList = [];
     this.offset = 0;
-    let countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
-    let selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
+    let countQuery = '';
+    let selectQuery = '';
+    if(this.starName == 'fullList') {
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube`;
+      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube ORDER BY views DESC`;
+    } else {
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
+      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
+    }
     this.setYoutubeCount(countQuery);
     this.pushYoutube(selectQuery + ` LIMIT ${this.offset}, ${this.limit}`);
 
@@ -194,11 +201,21 @@ export class YoutubePage implements OnInit {
     let countQuery = "";
     let selectQuery = "";
     if(this.allSort) {
-      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
-      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
+      if(this.starName == 'fullList') {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube ORDER BY views DESC`;
+      } else {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
+      }
     } else {
-      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}' AND (`;
-      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' AND (`;
+      if(this.starName == 'fullList') {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE (`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE (`;
+      } else {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}' AND (`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' AND (`;
+      }
       for (let i = 0; i < words.length; i++) {
         if(i != 0) {
           countQuery += ' OR ';
