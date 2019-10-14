@@ -38,7 +38,9 @@ export class AdmobfreeService {
 
   async showInterstitialAd() {
     await this.admobFree.interstitial.isReady();
-    return this.admobFree.interstitial.show();
+    return new Promise(resolve => {
+      this.admobFree.interstitial.show().then(() => resolve()).catch(() => resolve());
+    });
   }
 
   showBannerAd() {

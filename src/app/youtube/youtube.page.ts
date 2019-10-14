@@ -55,6 +55,14 @@ export class YoutubePage implements OnInit {
   goSelf(starName: string) {
     this.starName = starName;
     this.youtubeList = [];
+
+    this.allSort = true;
+    this.mvSort = false;
+    this.fanCamSort = false;
+    this.stageMixSort = false;
+    this.dancePracticeSort = false;
+    this.lyricsSort = false;
+
     this.ngOnInit();
   }
 
