@@ -63,4 +63,12 @@ ion-content {
             color: #8e38ff;
         }
     }
+
+    .youtube.active {
+        color: red;
+
+        ion-icon {
+            color: red;
+        }
+    }
 }

@@ -6,6 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { AppRate } from '@ionic-native/app-rate/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { MyToastService } from './service/my-toast.service';
 import { LoadingService } from './service/loading.service';
@@ -37,7 +38,8 @@ export class AppComponent {
     private emailService: EmailService,
     private appService: AppService,
     private appRate: AppRate,
-    private admobFreeService: AdmobfreeService
+    private admobFreeService: AdmobfreeService,
+    private ga: GoogleAnalytics
   ) {
     this.backButtonToExit();
 
@@ -48,6 +50,8 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.backgroundColorByHexString('#1a9c95');
       this.splashScreen.hide();
+
+      this.ga.startTrackerWithId('UA-92208975-3');
     });
   }
   

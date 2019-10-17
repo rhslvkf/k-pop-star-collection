@@ -16,11 +16,18 @@
           </ion-menu-toggle>
 
           <ion-menu-toggle auto-hide="false">
-            <ion-item routerDirection="root" routerLink="/youtube/fullList" lines="none" routerLinkActive="active">
+            <ion-item class="youtube" routerLink="/youtube/fullList" lines="none" routerLinkActive="active">
               <ion-icon slot="start" name="logo-youtube"></ion-icon>
               <ion-label>K-POP Youtube List</ion-label>
             </ion-item>
           </ion-menu-toggle>
+
+          <!-- <ion-menu-toggle auto-hide="false">
+            <ion-item class="youtube" routerLink="/streamingchart" lines="none" routerLinkActive="active">
+              <ion-icon slot="start" name="musical-note"></ion-icon>
+              <ion-label>K-POP Streaming Chart</ion-label>
+            </ion-item>
+          </ion-menu-toggle> -->
 
           <ion-item (click)="favoriteMenuOpen = !favoriteMenuOpen" [class.parent-active]="favoriteMenuOpen" class="parent-menu" lines="none" routerLinkActive="active">
             <ion-icon slot="start" name="star"></ion-icon>

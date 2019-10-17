@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppRate } from '@ionic-native/app-rate/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { MyToastService } from '../service/my-toast.service';
 import { MenuToolBarService } from '../service/menu-toolbar.service';
@@ -35,8 +36,11 @@ export class HomePage {
     private sqlStorageService: SqlStorageService,
     private appRate: AppRate,
     private admobFreeService: AdmobfreeService,
-    private router: Router
+    private router: Router,
+    private ga: GoogleAnalytics
   ) {
+    ga.trackView('HomePage');
+
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#1a9c95');
       menuToolbarService.changeClass(MENUS.HOME);

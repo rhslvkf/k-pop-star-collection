@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { IonContent } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
 import { SELECT_FAVORITE_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS } from 'src/app/vo/query';
@@ -26,8 +27,11 @@ export class StarPage {
     private myToastService: MyToastService,
     private activatedRoute: ActivatedRoute,
     private statusBar: StatusBar,
-    private menuToolbarService: MenuToolBarService
+    private menuToolbarService: MenuToolBarService,
+    private ga: GoogleAnalytics
   ) {
+    this.ga.trackView('FavoriteStarPage');
+
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#7d19ff');
       menuToolbarService.changeClass(MENUS.FAVORITE);

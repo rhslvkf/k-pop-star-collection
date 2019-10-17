@@ -10,7 +10,8 @@ const routes: Routes = [
   { path: 'vlive/:starName', loadChildren: './vlive/vlive.module#VlivePageModule' },
   { path: 'favorites/star', loadChildren: './favorites/star/star.module#StarPageModule' },
   { path: 'favorites/youtube', loadChildren: './favorites/youtube/youtube.module#YoutubePageModule' },
-  { path: 'loading-page', loadChildren: './loading-page/loading-page.module#LoadingPagePageModule' }
+  { path: 'loading-page', loadChildren: './loading-page/loading-page.module#LoadingPagePageModule' },
+  { path: 'streamingchart', loadChildren: './streamingchart/streamingchart.module#StreamingchartPageModule' }
 ];
 
 @NgModule({

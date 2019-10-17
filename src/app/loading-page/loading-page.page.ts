@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { MenuController } from '@ionic/angular';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+
 import { SqlStorageService } from '../service/sql-storage.service';
 import { StarService } from '../service/sql/star.service';
 import { YoutubeService } from '../service/sql/youtube.service';
@@ -9,6 +12,7 @@ import { FacebookService } from '../service/sql/facebook.service';
 import { VliveService } from '../service/sql/vlive.service';
 import { AppService } from '../service/sql/app.service';
 import { AdmobfreeService } from '../service/admobfree.service';
+import { StreamingchartService } from '../service/sql/streamingchart.service';
 
 @Component({
   selector: 'app-loading-page',
@@ -27,12 +31,17 @@ export class LoadingPagePage {
     private facebookService: FacebookService,
     private vliveService: VliveService,
     private appService: AppService,
-    private admobFreeService: AdmobfreeService
+    private admobFreeService: AdmobfreeService,
+    private streamingchartService: StreamingchartService,
+    private menuCtrl: MenuController,
+    private ga: GoogleAnalytics
   ) {
+    menuCtrl.enable(false);
     this.loading();
   }
 
   async loading() {
+    let startTime = new Date().getTime();
     await this.admobFreeService.prepareInterstitialAd();
     this.progress = '0.1';
     await this.sqlStorageService.initSQL();
@@ -49,10 +58,14 @@ export class LoadingPagePage {
     this.progress = '0.7';
     await this.appService.syncAppTable();
     this.progress = '0.8';
-    await this.admobFreeService.showBannerAd();
+    // await this.streamingchartService.syncStreamingChartTable();
     this.progress = '0.9';
-    await this.admobFreeService.showInterstitialAd();
+    await this.admobFreeService.showBannerAd();
     this.progress = '1';
+    await this.admobFreeService.showInterstitialAd();
+    this.menuCtrl.enable(true);
+    let endTime = new Date().getTime();
+    this.ga.trackTiming('Category', endTime - startTime, 'Variable', 'Label');
     await this.router.navigateByUrl('/home', {replaceUrl: true});
   }
 

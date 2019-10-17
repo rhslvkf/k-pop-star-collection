@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { LoadingService } from '../service/loading.service';
 import { ModalPage } from '../modal/modal.page';
@@ -36,7 +37,8 @@ export class FacebookPage implements OnInit {
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private ga: GoogleAnalytics
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#304a80');
@@ -52,6 +54,8 @@ export class FacebookPage implements OnInit {
   }
 
   ngOnInit() {
+    this.ga.trackView('FacebookPage');
+
     this.loadingService.presentLoading();
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');

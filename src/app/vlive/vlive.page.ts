@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ModalController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { Observable } from 'rxjs';
 
@@ -28,7 +29,8 @@ export class VlivePage implements OnInit {
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
-    private sqlStorageService: SqlStorageService
+    private sqlStorageService: SqlStorageService,
+    private ga: GoogleAnalytics
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#3cb7bd');
@@ -43,6 +45,8 @@ export class VlivePage implements OnInit {
   }
 
   ngOnInit() {
+    this.ga.trackView('VlivePage');
+
     this.loadingService.presentLoading();
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');

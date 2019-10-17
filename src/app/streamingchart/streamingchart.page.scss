@@ -1,0 +1,107 @@
+.header-toolbar {
+    --background: red;
+    color: white;
+}
+
+ion-content {
+    --background: #ebebeb;
+    --padding-top: 3px;
+    text-align: center;
+
+    ion-fab {
+        left: 20px;
+        bottom: 20px;
+
+        ion-fab-button {
+            width: 36px;
+            height: 36px;
+        }
+
+        ion-fab-list {
+            left: -10px;
+            bottom: -20px;
+
+            .twitter-icon {
+                color: #1da1f2;
+            }
+        
+            .facebook-icon {
+                color: #3b5998;
+            }
+
+            .person-icon {
+                color: lightseagreen;
+            }
+        }
+    }
+
+    .youtube-sort {
+        overflow-x: scroll;
+        overflow-y: hidden;
+    
+        .button-contents {
+            white-space: nowrap;
+    
+            ion-button {
+                --border-color: red;
+                --color: red;
+            }
+    
+            ion-button.selected {
+                --background: red;
+                --color: white;
+            }
+        }
+    }
+
+    .youtube-content {
+        margin: 3px;
+        width: 155px;
+        display: inline-block;
+        text-align: left;
+    
+        ion-card-header {
+            padding: 5px 10px;
+            height: 42px;
+            background: red;
+            border-top: 1px solid #ebebeb;
+        }
+        
+        ion-card-subtitle {
+            font-size: 12px;
+            display: -webkit-box;
+            line-height: 17px;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            color: white;
+        }
+    
+        .youtube-time {
+            position: absolute;
+            right: 0;
+            bottom: 42px;
+            background-color: black;
+            padding: 1px 4px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .favorite {
+            position: absolute;
+            right: 5px;
+            top: 2px;
+            font-size: 20px;
+            color: red;
+        }
+    }
+
+    .scrollTopBtn {
+        display: none;
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+    }
+}

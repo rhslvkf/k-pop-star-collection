@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, ModalController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { LoadingService } from '../service/loading.service';
 import { ModalPage } from '../modal/modal.page';
@@ -39,7 +40,8 @@ export class TwitterPage implements OnInit {
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private ga: GoogleAnalytics
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#1989cf');
@@ -55,6 +57,8 @@ export class TwitterPage implements OnInit {
   }
 
   ngOnInit() {
+    this.ga.trackView('TwitterPage');
+
     this.loadingService.presentLoading();
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');

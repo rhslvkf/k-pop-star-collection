@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, IonInfiniteScroll } from '@ionic/angular';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { MyToastService } from '../service/my-toast.service';
 import { ModalPage } from '../modal/modal.page';
@@ -44,7 +45,8 @@ export class YoutubePage implements OnInit {
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
-    private sqlStorageService: SqlStorageService
+    private sqlStorageService: SqlStorageService,
+    private ga: GoogleAnalytics
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#d40000');
@@ -67,6 +69,8 @@ export class YoutubePage implements OnInit {
   }
 
   ngOnInit() {
+    this.ga.trackView('YoutubePage');
+
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
     this.setYoutube_SL();
@@ -94,7 +98,7 @@ export class YoutubePage implements OnInit {
     let selectQuery = '';
     if(this.starName == 'fullList') {
       countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube`;
-      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube ORDER BY views DESC`;
+      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube GROUP BY videoId ORDER BY views DESC`;
     } else {
       countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
       selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
@@ -203,7 +207,7 @@ export class YoutubePage implements OnInit {
     if(this.allSort) {
       if(this.starName == 'fullList') {
         countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube`;
-        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube ORDER BY views DESC`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube GROUP BY videoId ORDER BY views DESC`;
       } else {
         countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
         selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
@@ -224,8 +228,13 @@ export class YoutubePage implements OnInit {
         countQuery += `title LIKE '%${words[i]}%'`;
         selectQuery += `title LIKE '%${words[i]}%'`;
       }
-      countQuery += ')';
-      selectQuery += `) ORDER BY views DESC`;
+      if(this.starName == 'fullList') {
+        countQuery += `)`;
+        selectQuery += `) GROUP BY videoId ORDER BY views DESC`;
+      } else {
+        countQuery += `)`;
+        selectQuery += `) ORDER BY views DESC`;
+      }
     }
 
     this.infiniteScroll.disabled = false;

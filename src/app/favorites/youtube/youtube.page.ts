@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
 import { SELECT_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_STAR_NAME, DELETE_FAVORITE_YOUTUBE } from 'src/app/vo/query';
@@ -30,8 +31,11 @@ export class YoutubePage {
     private myToastService: MyToastService,
     private activatedRoute: ActivatedRoute,
     private statusBar: StatusBar,
-    private menuToolbarService: MenuToolBarService
+    private menuToolbarService: MenuToolBarService,
+    private ga: GoogleAnalytics
   ) {
+    this.ga.trackView('FavoriteYoutubePage');
+
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#7d19ff');
       menuToolbarService.changeClass(MENUS.FAVORITE);
