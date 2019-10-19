@@ -119,4 +119,8 @@ export class AppComponent {
   async toDeveloper() {
     await this.emailService.sendEmail('', '');
   }
+
+  showInterstitialAd() {
+    this.admobFreeService.showInterstitialAd();
+  }
 }

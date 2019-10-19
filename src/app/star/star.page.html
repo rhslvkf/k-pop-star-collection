@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      K-POP Star
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="star-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
+  <ion-searchbar [(ngModel)]="term" debounce="500" (ionChange)="search()"></ion-searchbar>
+
+  <ion-card *ngFor="let star of stars">
+    <ion-card-header>
+      <ion-card-title>
+        <span>{{ star.name }}</span>
+        <span *ngIf="!star.favoriteFlag" class="favorite" (click)="addFavorite(star.name)"><ion-icon name="star-outline"></ion-icon></span>
+        <span *ngIf="star.favoriteFlag" class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="star"></ion-icon></span>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content *ngIf="star.sites">
+      <span *ngIf="star.sites.officialSite"><a href="{{ star.sites.officialSite }}">Official Site<ion-icon name="open"></ion-icon></a> &nbsp;</span>
+      <span *ngIf="star.sites.blog"><a href="{{ star.sites.blog }}">Blog<ion-icon name="open"></ion-icon></a> &nbsp;</span>
+      <span *ngIf="star.sites.instagram"><a href="{{ star.sites.instagram }}">Instagram<ion-icon name="open"></ion-icon></a></span>
+    </ion-card-content>
+    <ion-row>
+      <ion-col routerLink="/youtube/{{ star.name }}">
+        <ion-icon class="youtube-icon" name="logo-youtube"></ion-icon>
+      </ion-col>
+      <ion-col routerLink="/sns/twitter/{{ star.name }}">
+        <ion-icon class="twitter-icon" name="logo-twitter"></ion-icon>
+      </ion-col>
+      <ion-col routerLink="/sns/facebook/{{ star.name }}">
+        <ion-icon class="facebook-icon" name="logo-facebook"></ion-icon>
+      </ion-col>
+      <ion-col routerLink="/vlive/{{ star.name }}">
+        <ion-img class="vlive-log" src="../../assets/vlive-logo.png"></ion-img>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+
+  <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
+    <ion-icon name="arrow-up"></ion-icon>
+  </ion-button>
+
+  <ion-infinite-scroll (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

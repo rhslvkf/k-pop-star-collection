@@ -7,6 +7,10 @@ ion-header {
         --background: lightseagreen;
     }
 
+    .star {
+        --background: lightseagreen;
+    }
+
     .youtube {
         --background: red;
     }
@@ -49,6 +53,14 @@ ion-content {
     }
 
     .home.active {
+        color: lightseagreen;
+
+        ion-icon {
+            color: lightseagreen;
+        }
+    }
+
+    .star.active {
         color: lightseagreen;
 
         ion-icon {

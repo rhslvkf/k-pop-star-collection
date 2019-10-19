@@ -9,43 +9,25 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="home-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
-  <ion-searchbar [(ngModel)]="term" debounce="500" (ionChange)="search()"></ion-searchbar>
-
-  <ion-card *ngFor="let star of stars">
-    <ion-card-header>
-      <ion-card-title>
-        <span>{{ star.name }}</span>
-        <span *ngIf="!star.favoriteFlag" class="favorite" (click)="addFavorite(star.name)"><ion-icon name="star-outline"></ion-icon></span>
-        <span *ngIf="star.favoriteFlag" class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="star"></ion-icon></span>
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content *ngIf="star.sites">
-      <span *ngIf="star.sites.officialSite"><a href="{{ star.sites.officialSite }}">Official Site<ion-icon name="open"></ion-icon></a> &nbsp;</span>
-      <span *ngIf="star.sites.blog"><a href="{{ star.sites.blog }}">Blog<ion-icon name="open"></ion-icon></a> &nbsp;</span>
-      <span *ngIf="star.sites.instagram"><a href="{{ star.sites.instagram }}">Instagram<ion-icon name="open"></ion-icon></a></span>
-    </ion-card-content>
-    <ion-row>
-      <ion-col routerLink="/youtube/{{ star.name }}" (click)="showInterstitialAd()">
-        <ion-icon class="youtube-icon" name="logo-youtube"></ion-icon>
-      </ion-col>
-      <ion-col routerLink="/sns/twitter/{{ star.name }}" (click)="showInterstitialAd()">
-        <ion-icon class="twitter-icon" name="logo-twitter"></ion-icon>
-      </ion-col>
-      <ion-col routerLink="/sns/facebook/{{ star.name }}" (click)="showInterstitialAd()">
-        <ion-icon class="facebook-icon" name="logo-facebook"></ion-icon>
-      </ion-col>
-      <ion-col routerLink="/vlive/{{ star.name }}" (click)="showInterstitialAd()">
-        <ion-img class="vlive-log" src="../../assets/vlive-logo.png"></ion-img>
-      </ion-col>
-    </ion-row>
-  </ion-card>
-
-  <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
-    <ion-icon name="arrow-up"></ion-icon>
-  </ion-button>
-
-  <ion-infinite-scroll (ionInfinite)="loadData($event)">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+<ion-content padding>
+  <ion-item routerLink="/star" lines="none" (click)="showInterstitialAd()">
+    <ion-icon slot="start" name="people"></ion-icon>
+    <ion-label>K-POP Star</ion-label>
+  </ion-item>
+  <ion-item routerLink="/youtube/fullList" lines="none" (click)="showInterstitialAd()">
+    <ion-icon slot="start" name="logo-youtube"></ion-icon>
+    <ion-label>K-POP Youtube</ion-label>
+  </ion-item>
+  <ion-item routerLink="/streamingchart" lines="none" (click)="showInterstitialAd()">
+    <ion-icon slot="start" name="musical-note"></ion-icon>
+    <ion-label>K-POP Streaming Chart</ion-label>
+  </ion-item>
+  <ion-item routerLink="/favorites/star" lines="none" (click)="showInterstitialAd()">
+    <ion-icon slot="start" name="person"></ion-icon>
+    <ion-label>Favorites - Star</ion-label>
+  </ion-item>
+  <ion-item routerLink="/favorites/youtube" lines="none" (click)="showInterstitialAd()">
+    <ion-icon slot="start" name="logo-youtube"></ion-icon>
+    <ion-label>Favorites - Youtube</ion-label>
+  </ion-item>
 </ion-content>
