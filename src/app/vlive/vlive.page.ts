@@ -61,6 +61,7 @@ export class VlivePage implements OnInit {
   }
 
   vliveIframeInit(vliveUrl: string) {
+    console.log('vliveUrl', vliveUrl);
     if(document.querySelector('#vlive-content iframe')) document.querySelector('#vlive-content iframe').remove();
 
     // create and insert vlive iframe tag

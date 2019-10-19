@@ -97,8 +97,8 @@ export class YoutubePage implements OnInit {
     let countQuery = '';
     let selectQuery = '';
     if(this.starName == 'fullList') {
-      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube`;
-      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube GROUP BY videoId ORDER BY views DESC`;
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName != 'streamingchart'`;
+      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName != 'streamingchart' GROUP BY videoId ORDER BY views DESC`;
     } else {
       countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
       selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
@@ -206,16 +206,16 @@ export class YoutubePage implements OnInit {
     let selectQuery = "";
     if(this.allSort) {
       if(this.starName == 'fullList') {
-        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube`;
-        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube GROUP BY videoId ORDER BY views DESC`;
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName != 'streamingchart'`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName != 'streamingchart' GROUP BY videoId ORDER BY views DESC`;
       } else {
         countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
         selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
       }
     } else {
       if(this.starName == 'fullList') {
-        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE (`;
-        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE (`;
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName != 'streamingchart' AND (`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName != 'streamingchart' AND (`;
       } else {
         countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}' AND (`;
         selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' AND (`;

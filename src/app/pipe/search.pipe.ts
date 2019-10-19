@@ -10,7 +10,7 @@ export class SearchPipe implements PipeTransform {
     if (!terms) return items;
 
     return items.filter( it => {
-      // search starName from favorite/starPage
+      // search starName from favorite/starPage and modalPage
       if(it.name && it.name.toLowerCase().includes(terms.toLowerCase())) {
         return true;
       }

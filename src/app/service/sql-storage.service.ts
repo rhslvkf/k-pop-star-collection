@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 
-import { CREATE_TABLE_STARS, CREATE_TABLE_UPDATE_STATUS, CREATE_TABLE_STAR_SITES, CREATE_TABLE_YOUTUBE, CREATE_TABLE_TWITTER, CREATE_TABLE_FACEBOOK, CREATE_TABLE_VLIVE, CREATE_TABLE_FAVORITE_YOUTUBE, CREATE_TABLE_APP, CREATE_TABLE_STREAMING_CHART } from '../vo/query';
+import { CREATE_TABLE_STARS, CREATE_TABLE_STAR_SITES, CREATE_TABLE_YOUTUBE, CREATE_TABLE_TWITTER, CREATE_TABLE_FACEBOOK, CREATE_TABLE_VLIVE, CREATE_TABLE_FAVORITE_YOUTUBE, CREATE_TABLE_APP, CREATE_TABLE_STREAMING_CHART } from '../vo/query';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,6 @@ export class SqlStorageService {
   }
 
   async createTables(): Promise<any> {
-    await this.query(CREATE_TABLE_UPDATE_STATUS);
     await this.query(CREATE_TABLE_STARS);
     await this.query(CREATE_TABLE_STAR_SITES);
     await this.query(CREATE_TABLE_YOUTUBE);
@@ -32,8 +31,8 @@ export class SqlStorageService {
     await this.query(CREATE_TABLE_FACEBOOK);
     await this.query(CREATE_TABLE_VLIVE);
     await this.query(CREATE_TABLE_FAVORITE_YOUTUBE);
-    return await this.query(CREATE_TABLE_APP);
-    // return await this.query(CREATE_TABLE_STREAMING_CHART);
+    await this.query(CREATE_TABLE_APP);
+    return this.query(CREATE_TABLE_STREAMING_CHART);
   }
 
   query(query: string, params: any[] = []): Promise<any> {

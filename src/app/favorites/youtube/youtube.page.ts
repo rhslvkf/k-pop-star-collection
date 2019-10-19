@@ -96,7 +96,7 @@ export class YoutubePage {
     this.sqlStorageService.query(DELETE_FAVORITE_YOUTUBE, [videoId]);
   }
 
-  youtubeSorting(name: string, index: number) {
+  youtubeSorting(name: string, index?: number) {
     if(name == 'ALL') {
       document.querySelector('.button-contents .all').classList.add('selected');
       let d = document.querySelectorAll('.button-contents .starName');

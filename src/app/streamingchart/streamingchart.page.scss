@@ -75,6 +75,17 @@ ion-content {
             -webkit-box-orient: vertical;
             color: white;
         }
+
+        .ranking {
+            position: absolute;
+            left: 0;
+            bottom: 42px;
+            background-color: black;
+            padding: 1px 4px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
     
         .youtube-time {
             position: absolute;

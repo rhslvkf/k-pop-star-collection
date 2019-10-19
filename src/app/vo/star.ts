@@ -13,9 +13,8 @@ export class Site {
 export class Star {
     name: string;
     order?: string;
-    updateDate?: string;
-    sites: Site;
-    favoriteFlag: boolean;
+    sites?: Site;
+    favoriteFlag?: boolean;
 
     constructor(name: string, sites: Site) {
         this.name = name;

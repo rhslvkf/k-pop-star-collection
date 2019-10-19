@@ -107,7 +107,7 @@ export class AppComponent {
   }
 
   async shareApp() {
-    let message = 'You can enjoy Youtube, SNS of K-POP Stars in one app.';
+    let message = 'You can enjoy Youtube, SNS, vlive of K-POP Stars in one app.';
     let subject = 'K-POP Star Collection';
     let url = 'https://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection';
 

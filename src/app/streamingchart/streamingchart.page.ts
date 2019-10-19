@@ -67,8 +67,8 @@ export class StreamingchartPage implements OnInit {
     this.youtubeList = [];
     this.offset = 0;
 
-    let countQuery = `SELECT COUNT(streaming_chart.videoId) FROM youtube, streaming_chart WHERE youtube.videoId = streaming_chart.videoId AND streaming_chart.year = ${this.year}`;
-    this.selectQuery = `SELECT youtube.*, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube, streaming_chart WHERE youtube.videoId = streaming_chart.videoId AND streaming_chart.year = ${this.year}`;
+    let countQuery = `SELECT COUNT(streaming_chart.videoId) FROM youtube, streaming_chart WHERE youtube.videoId = streaming_chart.videoId AND youtube.starName = 'streamingchart' AND streaming_chart.year = ${this.year}`;
+    this.selectQuery = `SELECT youtube.*, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube, streaming_chart WHERE youtube.videoId = streaming_chart.videoId AND youtube.starName = 'streamingchart' AND streaming_chart.year = ${this.year}`;
     if(this.month) {
       countQuery += ` AND streaming_chart.month = ${this.month}`;
       this.selectQuery += ` AND streaming_chart.month = ${this.month}`;

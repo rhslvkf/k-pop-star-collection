@@ -12,12 +12,8 @@ import { AppRate } from '@ionic-native/app-rate/ngx';
 import { AdMobFree } from '@ionic-native/admob-free/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
-import { AngularFireModule } from 'angularfire2';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { FIREBASE_CONFIG } from './config/firebase.config';
 import { SqlStorageService } from './service/sql-storage.service';
 
 @NgModule({
@@ -26,9 +22,7 @@ import { SqlStorageService } from './service/sql-storage.service';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    AppRoutingModule,
-    AngularFireModule.initializeApp(FIREBASE_CONFIG),
-    AngularFireDatabaseModule
+    AppRoutingModule
   ],
   providers: [
     StatusBar,

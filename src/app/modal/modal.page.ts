@@ -2,22 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 
 import { Platform, ModalController, IonContent } from '@ionic/angular';
 
-import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-export interface Site {
-  officialSite: string;
-  instagram: string;
-  blog: string;
-}
-
-export interface Star {
-  name?: string;
-  order: string;
-  updateDate: string;
-  sites: Site;
-}
+import { SqlStorageService } from '../service/sql-storage.service';
+import { Star } from '../vo/star';
+import { SELECT_STARS_NAME } from '../vo/query';
 
 @Component({
   selector: 'app-modal',
@@ -26,26 +13,26 @@ export interface Star {
 })
 export class ModalPage {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
-  stars: Observable<Star[]>;
+  stars: Star[] = [];
   callParentFunction: any;
 
   constructor(
     private platform: Platform,
     private modalCtrl: ModalController,
-    private firebaseDB: AngularFireDatabase
+    private sqlStorageService: SqlStorageService
   ) {
     this.platform.backButton.subscribe(() => {
       this.dismiss();
     });
-    this.stars = this.firebaseDB.list<Star>('stars/list', ref => ref.orderByChild('order'))
-      .snapshotChanges()
-      .pipe(
-        map(changes => {
-          return changes.map(c => ({
-            name: c.payload.key, ...c.payload.val()
-          }))
-        })
-      );
+    
+    this.setStarNames();
+  }
+
+  async setStarNames() {
+    let data = await this.sqlStorageService.query(SELECT_STARS_NAME);
+    for(let i = 0; i < data.res.rows.length; i++) {
+      this.stars.push({name: data.res.rows.item(i).name});
+    }
   }
 
   parentInit(starName: string) {
