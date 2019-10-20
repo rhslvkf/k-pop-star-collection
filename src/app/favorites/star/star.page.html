@@ -16,8 +16,10 @@
       <ion-button color="tertiary" routerLink="/home" replaceUrl>Home</ion-button>
     </div>
   </div>
-  <ion-searchbar *ngIf="stars.length > 0" [(ngModel)]="terms"></ion-searchbar>
-  <ion-card *ngFor="let star of stars | search : terms">
+
+  <ion-searchbar *ngIf="!noFavoriteContents" [(ngModel)]="term" debounce="500" (ionChange)="search()"></ion-searchbar>
+
+  <ion-card *ngFor="let star of stars">
     <ion-card-header>
       <ion-card-title>
         <span>{{ star.name }}</span>
@@ -44,7 +46,12 @@
       </ion-col>
     </ion-row>
   </ion-card>
+
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>
   </ion-button>
+
+  <ion-infinite-scroll (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

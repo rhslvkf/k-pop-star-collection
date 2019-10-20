@@ -1,13 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { IonContent } from '@ionic/angular';
+import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
-import { SELECT_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_STAR_NAME, DELETE_FAVORITE_YOUTUBE } from 'src/app/vo/query';
+import { SELECT_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_STAR_NAME, DELETE_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_COUNT } from 'src/app/vo/query';
 import { Youtube } from 'src/app/vo/youtube';
 import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
@@ -20,10 +20,17 @@ import { MENUS } from 'src/app/vo/menus';
 })
 export class YoutubePage {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
+  @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   youtubeList: Youtube[] = [];
   starNameList: string[] = [];
   terms = "";
+  youtubeCount = 0;
+  offset = 0;
+  limit = 20;
   noFavoriteContents = false;
+
+  selectQuery: string;
+  countQuery: string;
 
   constructor(
     private youtube: YoutubeVideoPlayer,
@@ -44,7 +51,10 @@ export class YoutubePage {
     });
   }
 
-  setYoutube_SL() {
+  async setYoutube_SL() {
+    this.selectQuery = SELECT_FAVORITE_YOUTUBE;
+    this.countQuery = SELECT_FAVORITE_YOUTUBE_COUNT;
+
     this.sqlStorageService.query(SELECT_FAVORITE_YOUTUBE_STAR_NAME).then(data => {
       let dataLength = data.res.rows.length;
       for(let i = 0; i < dataLength; i++) {
@@ -52,10 +62,19 @@ export class YoutubePage {
       }
     });
 
-    this.sqlStorageService.query(SELECT_FAVORITE_YOUTUBE).then(data => {
-      let dataLength = data.res.rows.length;
+    await this.setYoutubeCount();
+    if(this.youtubeCount == 0) this.noFavoriteContents = true;
+    this.pushYoutube();
+  }
 
-      if(dataLength == 0) this.noFavoriteContents = true;
+  async setYoutubeCount() {
+    let data = await this.sqlStorageService.query(this.countQuery);
+    this.youtubeCount = data.res.rows.item(0).youtubeCount;
+  }
+
+  pushYoutube() {
+    this.sqlStorageService.query(this.selectQuery, [this.offset, this.limit]).then(data => {
+      let dataLength = data.res.rows.length;
 
       for(let i = 0; i < dataLength; i++) {
         let youtube = data.res.rows.item(i);
@@ -112,15 +131,41 @@ export class YoutubePage {
       }
     }
 
-    this.terms = 'starName';
+    this.infiniteScroll.disabled = false;
+    this.youtubeList = [];
+    this.offset = 0;
+    this.terms = '';
 
     let d = document.querySelectorAll('.button-contents ion-button.selected');
     for (let i = 0; i < d.length; i++) {
       if(d[i].innerHTML == 'ALL') {
         break;
       }
-      this.terms += '|' + d[i].innerHTML;
+      if(i > 0) this.terms += ", ";
+      this.terms += "'" + d[i].innerHTML + "'";
     }
+
+    if(this.terms == '') { // ALL
+      this.selectQuery = SELECT_FAVORITE_YOUTUBE;
+      this.countQuery = SELECT_FAVORITE_YOUTUBE_COUNT;
+    } else {
+      this.selectQuery = `SELECT youtube.* FROM youtube INNER JOIN favorite_youtube ON youtube.videoId = favorite_youtube.videoId WHERE youtube.starName IN (${this.terms}) GROUP BY youtube.videoId ORDER BY youtube.views DESC LIMIT ?, ?`;
+      this.countQuery = `SELECT COUNT(DISTINCT(youtube.videoId)) AS youtubeCount FROM youtube INNER JOIN favorite_youtube ON youtube.videoId = favorite_youtube.videoId WHERE youtube.starName IN (${this.terms})`;
+    }
+
+    this.setYoutubeCount();
+    this.pushYoutube();
+  }
+
+  loadData(event) {
+    setTimeout(() => {
+      this.offset += this.limit;
+      this.pushYoutube();
+      if(this.offset + this.limit >= this.youtubeCount) {
+        event.target.disabled = true;
+      }
+      event.target.complete();
+    }, 500);
   }
 
 }

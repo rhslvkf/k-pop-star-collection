@@ -16,13 +16,15 @@
       <ion-button color="tertiary" routerLink="/home" replaceUrl>Home</ion-button>
     </div>
   </div>
+
   <div *ngIf="starNameList.length > 0" class="youtube-sort">
     <div class="button-contents">
       <ion-button class="all selected" fill="outline" size="small" (click)="youtubeSorting('ALL')">ALL</ion-button>
       <ion-button *ngFor="let name of starNameList; let i = index" class="starName" [ngClass]="'index' + i" fill="outline" size="small" (click)="youtubeSorting(name, i)">{{ name }}</ion-button>
     </div>
   </div>
-  <ion-card class="youtube-content" [attr.data-id]="youtube.videoId" *ngFor="let youtube of youtubeList | search : terms" (click)="playYoutube(youtube.videoId)">
+
+  <ion-card class="youtube-content" [attr.data-id]="youtube.videoId" *ngFor="let youtube of youtubeList" (click)="playYoutube(youtube.videoId)">
     <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
     <span class="youtube-time">{{ youtube.time }}</span>
     <span class="favorite" (click)="removeFavorite(youtube.videoId, $event)"><ion-icon name="star"></ion-icon></span>
@@ -30,7 +32,12 @@
       <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
     </ion-card-header>
   </ion-card>
+
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>
   </ion-button>
+
+  <ion-infinite-scroll (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

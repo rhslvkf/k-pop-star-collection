@@ -6,7 +6,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { TwitterPage } from './twitter.page';
-import { PipesModule } from '../pipe/pipes.module';
 import { ModalPageModule } from '../modal/modal.module';
 
 const routes: Routes = [
@@ -22,7 +21,6 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    PipesModule,
     ModalPageModule
   ],
   declarations: [TwitterPage]

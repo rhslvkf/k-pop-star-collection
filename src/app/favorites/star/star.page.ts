@@ -1,12 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { IonContent } from '@ionic/angular';
+import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
-import { SELECT_FAVORITE_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS } from 'src/app/vo/query';
+import { SELECT_FAVORITE_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS, SELECT_FAVORITE_STARS_COUNT, SELECT_FAVORITE_STARS_BY_NAME, SELECT_FAVORITE_STARS_COUNT_BY_NAME } from 'src/app/vo/query';
 import { Star, Site } from 'src/app/vo/star';
 import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
@@ -19,7 +19,12 @@ import { MENUS } from 'src/app/vo/menus';
 })
 export class StarPage {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
+  @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   stars: Star[] = [];
+  term = "";
+  starsCount = 0;
+  offset = 0;
+  limit = 10;
   noFavoriteContents = false;
 
   constructor(
@@ -40,10 +45,24 @@ export class StarPage {
     });
   }
 
-  setFavoriteStars_SL() {
-    this.sqlStorageService.query(SELECT_FAVORITE_STARS).then(data => {
+  async setFavoriteStars_SL() {
+    this.stars = [];
+    this.offset = 0;
+    await this.setStarsCount(SELECT_FAVORITE_STARS_COUNT, []);
+    if(this.starsCount == 0) this.noFavoriteContents = true;
+    this.pushStars(SELECT_FAVORITE_STARS, [this.offset, this.limit]);
+  }
+
+  async setStarsCount(query: string, params: any[]) {
+    let data = await this.sqlStorageService.query(query, params);
+    this.starsCount = data.res.rows.item(0).starsCount;
+
+    return Promise.resolve();
+  }
+
+  pushStars(query: string, params: any[]) {
+    this.sqlStorageService.query(query, params).then(data => {
       let dataLength = data.res.rows.length;
-      if(dataLength == 0) this.noFavoriteContents = true;
       for(let i = 0; i < dataLength; i++) {
         let star = data.res.rows.item(i);
         this.getStarSites_SL(star.name).then(site => {
@@ -91,6 +110,31 @@ export class StarPage {
     }
 
     this.sqlStorageService.query(UPDATE_FAVORITE_STARS, [0, starName]);
+  }
+
+  loadData(event) {
+    setTimeout(() => {
+      this.offset += this.limit;
+      let term = '%' + this.term + '%';
+      this.pushStars(SELECT_FAVORITE_STARS_BY_NAME, [term, this.offset, this.limit]);
+      if(this.offset + this.limit >= this.starsCount) {
+        event.target.disabled = true;
+      }
+      event.target.complete();
+    }, 500);
+  }
+
+  async search() {
+    this.stars = [];
+    this.offset = 0;
+    this.infiniteScroll.disabled = false;
+
+    let term = '%' + this.term + '%';
+    await this.setStarsCount(SELECT_FAVORITE_STARS_COUNT_BY_NAME, [term]);
+    if(this.starsCount <= this.limit) {
+      this.infiniteScroll.disabled = true;
+    }
+    this.pushStars(SELECT_FAVORITE_STARS_BY_NAME, [term, this.offset, this.limit]);
   }
 
 }
