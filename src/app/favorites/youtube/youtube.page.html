@@ -7,6 +7,9 @@
       Favorite - Youtube
     </ion-title>
   </ion-toolbar>
+  <div id="youtube-div" style="position: relative; padding-top: 56.25%; display: none;">
+    <iframe id="youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+  </div>
 </ion-header>
 
 <ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
@@ -24,7 +27,7 @@
     </div>
   </div>
 
-  <ion-card class="youtube-content" [attr.data-id]="youtube.videoId" *ngFor="let youtube of youtubeList" (click)="playYoutube(youtube.videoId)">
+  <ion-card class="youtube-content" [attr.data-id]="youtube.videoId" *ngFor="let youtube of youtubeList" (click)="playYoutube(youtube.videoId)" [ngClass]="{'active': youtube.videoId == activeVideoId}">
     <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
     <span class="youtube-time">{{ youtube.time }}</span>
     <span class="favorite" (click)="removeFavorite(youtube.videoId, $event)"><ion-icon name="star"></ion-icon></span>

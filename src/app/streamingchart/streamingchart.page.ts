@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, IonInfiniteScroll, ModalController } from '@ionic/angular';
-import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
@@ -12,6 +11,7 @@ import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { SqlStorageService } from '../service/sql-storage.service';
 import { MENUS } from '../vo/menus';
 import { INSERT_FAVORITE_YOUTUBE, DELETE_FAVORITE_YOUTUBE } from '../vo/query';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 @Component({
   selector: 'app-streamingchart',
@@ -22,6 +22,7 @@ export class StreamingchartPage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   youtubeList: Youtube[] = [];
+  activeVideoId: string;
 
   year: string;
   month: string;
@@ -34,13 +35,13 @@ export class StreamingchartPage implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private youtube: YoutubeVideoPlayer,
     private myToastService: MyToastService,
     private statusBar: StatusBar,
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#d40000');
@@ -61,6 +62,17 @@ export class StreamingchartPage implements OnInit {
         document.querySelector('ion-select').shadowRoot.querySelector('.select-text').innerHTML = date;
       }
     }, 500);
+  }
+
+  ionViewDidEnter() {
+    this.admobFreeService.removeBannerAd();
+  }
+
+  ionViewWillLeave() {
+    let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+
+    this.admobFreeService.showBannerAd();
   }
 
   setYoutube_SL() {
@@ -110,7 +122,19 @@ export class StreamingchartPage implements OnInit {
   }
 
   playYoutube(videoId: string) {
-    this.youtube.openVideo(videoId);
+    document.getElementById('youtube-iframe').setAttribute('src', `https://www.youtube.com/embed/${videoId}?enablejsapi=1&version=3&playerapiid=ytplayer`);
+
+    this.activeVideoId = videoId;
+    document.getElementById('youtube-div').style.display = '';
+
+    let count = 0;
+    let interval = setInterval(() => {
+      let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+      youtubeIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      if(count++ >= 3) {
+        clearInterval(interval);
+      }
+    }, 300);
   }
 
   scrollToTop() {

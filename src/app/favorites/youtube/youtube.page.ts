@@ -2,7 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
-import { YoutubeVideoPlayer } from '@ionic-native/youtube-video-player/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
@@ -12,6 +11,7 @@ import { Youtube } from 'src/app/vo/youtube';
 import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
 import { MENUS } from 'src/app/vo/menus';
+import { AdmobfreeService } from 'src/app/service/admobfree.service';
 
 @Component({
   selector: 'app-youtube',
@@ -22,6 +22,7 @@ export class YoutubePage {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   youtubeList: Youtube[] = [];
+  activeVideoId: string;
   starNameList: string[] = [];
   terms = "";
   youtubeCount = 0;
@@ -33,13 +34,13 @@ export class YoutubePage {
   countQuery: string;
 
   constructor(
-    private youtube: YoutubeVideoPlayer,
     private sqlStorageService: SqlStorageService,
     private myToastService: MyToastService,
     private activatedRoute: ActivatedRoute,
     private statusBar: StatusBar,
     private menuToolbarService: MenuToolBarService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     this.ga.trackView('FavoriteYoutubePage');
 
@@ -49,6 +50,17 @@ export class YoutubePage {
 
       this.setYoutube_SL();
     });
+  }
+
+  ionViewDidEnter() {
+    this.admobFreeService.removeBannerAd();
+  }
+
+  ionViewWillLeave() {
+    let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+
+    this.admobFreeService.showBannerAd();
   }
 
   async setYoutube_SL() {
@@ -84,7 +96,19 @@ export class YoutubePage {
   }
 
   playYoutube(videoId: string) {
-    this.youtube.openVideo(videoId);
+    document.getElementById('youtube-iframe').setAttribute('src', `https://www.youtube.com/embed/${videoId}?enablejsapi=1&version=3&playerapiid=ytplayer`);
+
+    this.activeVideoId = videoId;
+    document.getElementById('youtube-div').style.display = '';
+
+    let count = 0;
+    let interval = setInterval(() => {
+      let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+      youtubeIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      if(count++ >= 3) {
+        clearInterval(interval);
+      }
+    }, 300);
   }
 
   scrollToTop() {

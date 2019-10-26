@@ -12,10 +12,13 @@
       </ion-item>
     </ion-title>
   </ion-toolbar>
+  <div id="youtube-div" style="position: relative; padding-top: 56.25%; display: none;">
+    <iframe id="youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+  </div>
 </ion-header>
 
 <ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
-  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList; let i = index" (click)="playYoutube(youtube.videoId)">
+  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList; let i = index" (click)="playYoutube(youtube.videoId)" [ngClass]="{'active': youtube.videoId == activeVideoId}">
     <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
     <span class="ranking">{{ i + 1 }}</span>
     <span class="youtube-time">{{ youtube.time }}</span>

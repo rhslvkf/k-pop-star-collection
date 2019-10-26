@@ -54,6 +54,12 @@ ion-content {
         }
     }
 
+    .youtube-content.active {
+        ion-card-header {
+            background: black !important;
+        }
+    }
+
     .youtube-content {
         margin: 3px;
         width: 155px;

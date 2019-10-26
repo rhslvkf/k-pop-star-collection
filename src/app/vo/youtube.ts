@@ -6,4 +6,5 @@ export interface Youtube {
     time: string;
     views?: number;
     favoriteFlag?: boolean;
+    active?: boolean;
 }

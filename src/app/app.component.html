@@ -9,28 +9,28 @@
       <ion-content>
         <ion-list>
           <ion-menu-toggle auto-hide="false">
-            <ion-item class="home" routerDirection="root" routerLink="/home" lines="none" routerLinkActive="active" (click)="showInterstitialAd()">
+            <ion-item class="home" routerDirection="root" routerLink="/home" lines="none" routerLinkActive="active" (click)="showInterstitialAd()" replaceUrl>
               <ion-icon slot="start" name="home"></ion-icon>
               <ion-label>Home</ion-label>
             </ion-item>
           </ion-menu-toggle>
 
           <ion-menu-toggle auto-hide="false">
-            <ion-item class="star" routerLink="/star" lines="none" routerLinkActive="active" (click)="showInterstitialAd()">
+            <ion-item class="star" routerLink="/star" lines="none" routerLinkActive="active" (click)="showInterstitialAd()" replaceUrl>
               <ion-icon slot="start" name="people"></ion-icon>
               <ion-label>K-POP Star</ion-label>
             </ion-item>
           </ion-menu-toggle>
 
           <ion-menu-toggle auto-hide="false">
-            <ion-item class="youtube" routerLink="/youtube/fullList" lines="none" routerLinkActive="active" (click)="showInterstitialAd()">
+            <ion-item class="youtube" routerLink="/youtube/fullList" lines="none" routerLinkActive="active" (click)="showInterstitialAd()" replaceUrl>
               <ion-icon slot="start" name="logo-youtube"></ion-icon>
               <ion-label>K-POP Youtube</ion-label>
             </ion-item>
           </ion-menu-toggle>
 
           <ion-menu-toggle auto-hide="false">
-            <ion-item class="youtube" routerLink="/streamingchart" lines="none" routerLinkActive="active" (click)="showInterstitialAd()">
+            <ion-item class="youtube" routerLink="/streamingchart" lines="none" routerLinkActive="active" (click)="showInterstitialAd()" replaceUrl>
               <ion-icon slot="start" name="musical-note"></ion-icon>
               <ion-label>K-POP Streaming Chart</ion-label>
             </ion-item>
@@ -46,11 +46,11 @@
           </ion-item>
           <ion-list *ngIf="favoriteMenuOpen">
             <ion-menu-toggle>
-              <ion-item class="sub-item favorite" routerLink="/favorites/star" lines="none" routerLinkActive="active" (click)="showInterstitialAd()">
+              <ion-item class="sub-item favorite" routerLink="/favorites/star" lines="none" routerLinkActive="active" (click)="showInterstitialAd()" replaceUrl>
                 <ion-icon slot="start" name="person"></ion-icon>
                 <ion-label>Star</ion-label>
               </ion-item>
-              <ion-item class="sub-item favorite" routerLink="/favorites/youtube" lines="none" routerLinkActive="active" (click)="showInterstitialAd()">
+              <ion-item class="sub-item favorite" routerLink="/favorites/youtube" lines="none" routerLinkActive="active" (click)="showInterstitialAd()" replaceUrl>
                 <ion-icon slot="start" name="logo-youtube"></ion-icon>
                 <ion-label>Youtube</ion-label>
               </ion-item>
