@@ -1,6 +1,28 @@
-.header-toolbar {
-    --background: #8e38ff;
-    color: white;
+ion-header {
+    .header-toolbar {
+        --background: #8e38ff;
+        color: white;
+    }
+
+    #youtube-player-option {
+        color: white;
+        background: black;
+        text-align: right;
+        padding: 5px 0px 5px 0px;
+        font-size: 12px;
+
+        .on {
+            color: coral;
+        }
+
+        span {
+            padding: 0 10px;
+
+            ion-icon {
+                vertical-align: middle;
+            }
+        }
+    }
 }
 
 ion-content {

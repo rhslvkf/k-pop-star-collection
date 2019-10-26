@@ -12,6 +12,7 @@ import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
 import { MENUS } from 'src/app/vo/menus';
 import { AdmobfreeService } from 'src/app/service/admobfree.service';
+import { YoutubeEventListenerService } from 'src/app/service/youtube-event-listener.service';
 
 @Component({
   selector: 'app-youtube',
@@ -33,6 +34,9 @@ export class YoutubePage {
   selectQuery: string;
   countQuery: string;
 
+  repeatFlag = false;
+  randomRepeatFlag = false;
+
   constructor(
     private sqlStorageService: SqlStorageService,
     private myToastService: MyToastService,
@@ -40,7 +44,8 @@ export class YoutubePage {
     private statusBar: StatusBar,
     private menuToolbarService: MenuToolBarService,
     private ga: GoogleAnalytics,
-    private admobFreeService: AdmobfreeService
+    private admobFreeService: AdmobfreeService,
+    private youtubeEventListener: YoutubeEventListenerService
   ) {
     this.ga.trackView('FavoriteYoutubePage');
 
@@ -53,10 +58,19 @@ export class YoutubePage {
   }
 
   ionViewDidEnter() {
+    let count = 0;
+    let interval = setInterval(() => {
+      this.youtubeEventListener.addYoutubeEventListener();
+      if(count++ >= 3) {
+        clearInterval(interval);
+      }
+    }, 300);
     this.admobFreeService.removeBannerAd();
   }
 
   ionViewWillLeave() {
+    this.youtubeEventListener.removeYoutubeEventListener();
+
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
 
@@ -100,6 +114,7 @@ export class YoutubePage {
 
     this.activeVideoId = videoId;
     document.getElementById('youtube-div').style.display = '';
+    document.getElementById('youtube-player-option').style.display = '';
 
     let count = 0;
     let interval = setInterval(() => {
@@ -190,6 +205,26 @@ export class YoutubePage {
       }
       event.target.complete();
     }, 500);
+  }
+
+  repeatYoutubePlay() {
+    this.repeatFlag = !this.repeatFlag;
+    this.randomRepeatFlag = false;
+  }
+
+  randomRepeatYoutubePlay() {
+    this.randomRepeatFlag = !this.randomRepeatFlag;
+    this.repeatFlag = false;
+  }
+
+  closeYoutubePlayer() {
+    let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+
+    document.getElementById('youtube-div').style.display = 'none';
+    document.getElementById('youtube-player-option').style.display = 'none';
+
+    this.activeVideoId = '';
   }
 
 }

@@ -12,6 +12,7 @@ import { SqlStorageService } from '../service/sql-storage.service';
 import { MENUS } from '../vo/menus';
 import { INSERT_FAVORITE_YOUTUBE, DELETE_FAVORITE_YOUTUBE } from '../vo/query';
 import { AdmobfreeService } from '../service/admobfree.service';
+import { YoutubeEventListenerService } from '../service/youtube-event-listener.service';
 
 @Component({
   selector: 'app-streamingchart',
@@ -33,6 +34,9 @@ export class StreamingchartPage implements OnInit {
 
   selectQuery: string;
 
+  repeatFlag = false;
+  randomRepeatFlag = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private myToastService: MyToastService,
@@ -41,7 +45,8 @@ export class StreamingchartPage implements OnInit {
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
     private ga: GoogleAnalytics,
-    private admobFreeService: AdmobfreeService
+    private admobFreeService: AdmobfreeService,
+    private youtubeEventListener: YoutubeEventListenerService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#d40000');
@@ -65,10 +70,19 @@ export class StreamingchartPage implements OnInit {
   }
 
   ionViewDidEnter() {
+    let count = 0;
+    let interval = setInterval(() => {
+      this.youtubeEventListener.addYoutubeEventListener();
+      if(count++ >= 3) {
+        clearInterval(interval);
+      }
+    }, 300);
     this.admobFreeService.removeBannerAd();
   }
 
   ionViewWillLeave() {
+    this.youtubeEventListener.removeYoutubeEventListener();
+
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
 
@@ -126,6 +140,7 @@ export class StreamingchartPage implements OnInit {
 
     this.activeVideoId = videoId;
     document.getElementById('youtube-div').style.display = '';
+    document.getElementById('youtube-player-option').style.display = '';
 
     let count = 0;
     let interval = setInterval(() => {
@@ -195,6 +210,26 @@ export class StreamingchartPage implements OnInit {
     document.querySelector('ion-select').shadowRoot.querySelector('.select-text').innerHTML = date;
 
     this.setYoutube_SL();
+  }
+
+  repeatYoutubePlay() {
+    this.repeatFlag = !this.repeatFlag;
+    this.randomRepeatFlag = false;
+  }
+
+  randomRepeatYoutubePlay() {
+    this.randomRepeatFlag = !this.randomRepeatFlag;
+    this.repeatFlag = false;
+  }
+
+  closeYoutubePlayer() {
+    let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+
+    document.getElementById('youtube-div').style.display = 'none';
+    document.getElementById('youtube-player-option').style.display = 'none';
+
+    this.activeVideoId = '';
   }
 
 }
