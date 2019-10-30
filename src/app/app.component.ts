@@ -77,30 +77,8 @@ export class AppComponent {
       this.splashScreen.hide();
 
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
-      // this.fullscreenListener();
       this.ga.startTrackerWithId('UA-92208975-3');
     });
-  }
-
-  fullscreenListener() {
-    let a = [
-      {'a': 'fullscreenchange', 'b': 'fullscreen'},
-      {'a': 'msfullscreenchange', 'b': 'msFullscreenElement'},
-      {'a': 'mozfullscreenchange', 'b': 'mozFullScreen'},
-      {'a': 'webkitfullscreenchange', 'b': 'webkitIsFullScreen'}
-    ];
-
-    for(let i = 0; i < a.length; i++) {
-      document.addEventListener(a[i].a, function() {
-        if (document[a[i].b]) { // 전체화면 O
-          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
-          this.statusBar.hide();
-        } else { // 전체화면 X
-          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
-          this.statusBar.show();
-        }
-      });
-    }
   }
 
   backButtonToExit() {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { MenuController } from '@ionic/angular';
+import { MenuController, Platform } from '@ionic/angular';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 import { SqlStorageService } from '../service/sql-storage.service';
@@ -34,10 +34,13 @@ export class LoadingPagePage {
     private admobFreeService: AdmobfreeService,
     private streamingchartService: StreamingchartService,
     private menuCtrl: MenuController,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private platform: Platform
   ) {
-    menuCtrl.enable(false);
-    this.loading();
+    platform.ready().then(() => {
+      menuCtrl.enable(false);
+      this.loading();
+    });
   }
 
   async loading() {

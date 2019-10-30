@@ -107,7 +107,9 @@ export class YoutubeEventListenerService {
       if(repeatFlag && e.info == 0) {
         let activePlayer = document.querySelector('ion-card.active');
         if(activePlayer) {
-          (<HTMLElement>activePlayer.nextSibling).click();
+          let nextPlayer = activePlayer.nextSibling as HTMLElement;
+          if(nextPlayer) nextPlayer.click();
+          else (<HTMLElement>document.querySelector('.youtube-content')).click();
         } else {
           (<HTMLElement>document.querySelector('.youtube-content')).click();
         }
