@@ -13,7 +13,7 @@ import { AdmobfreeService } from '../service/admobfree.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage {
 
   constructor(
     private statusBar: StatusBar,
@@ -25,13 +25,10 @@ export class HomePage implements OnInit {
     ga.trackView('HomePage');
 
     activatedRoute.params.subscribe(() => {
+      this.admobFreeService.showBannerAd();
       statusBar.backgroundColorByHexString('#1a9c95');
       menuToolbarService.changeClass(MENUS.HOME);
     });
-  }
-
-  ngOnInit() {
-    this.admobFreeService.showBannerAd();
   }
 
   showInterstitialAd() {
