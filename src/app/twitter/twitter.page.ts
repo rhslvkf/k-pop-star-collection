@@ -12,6 +12,7 @@ import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
 import { SELECT_TWITTER } from '../vo/query';
 import { EmailService } from '../service/email.service';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 export interface Twitter {
   userName: string;
@@ -41,7 +42,8 @@ export class TwitterPage implements OnInit {
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
     private emailService: EmailService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#1989cf');
@@ -57,6 +59,8 @@ export class TwitterPage implements OnInit {
   }
 
   ngOnInit() {
+    this.admobFreeService.showBannerAd();
+
     this.ga.trackView('TwitterPage');
 
     this.loadingService.presentLoading();

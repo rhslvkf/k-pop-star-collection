@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
@@ -19,7 +19,7 @@ import { YoutubeEventListenerService } from 'src/app/service/youtube-event-liste
   templateUrl: './youtube.page.html',
   styleUrls: ['./youtube.page.scss'],
 })
-export class YoutubePage {
+export class YoutubePage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   youtubeList: Youtube[] = [];
@@ -57,6 +57,10 @@ export class YoutubePage {
     });
   }
 
+  ngOnInit() {
+    this.admobFreeService.removeBannerAd();
+  }
+
   ionViewDidEnter() {
     let count = 0;
     let interval = setInterval(() => {
@@ -65,7 +69,6 @@ export class YoutubePage {
         clearInterval(interval);
       }
     }, 300);
-    this.admobFreeService.removeBannerAd();
   }
 
   ionViewWillLeave() {
@@ -73,8 +76,6 @@ export class YoutubePage {
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
-
-    this.admobFreeService.showBannerAd();
   }
 
   async setYoutube_SL() {

@@ -75,6 +75,8 @@ export class YoutubePage implements OnInit {
   }
 
   ngOnInit() {
+    this.admobFreeService.removeBannerAd();
+
     this.ga.trackView('YoutubePage');
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
@@ -90,7 +92,6 @@ export class YoutubePage implements OnInit {
         clearInterval(interval);
       }
     }, 300);
-    this.admobFreeService.removeBannerAd();
   }
 
   ionViewWillLeave() {
@@ -98,8 +99,6 @@ export class YoutubePage implements OnInit {
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
-
-    this.admobFreeService.showBannerAd();
   }
 
   pushYoutube(query: string) {

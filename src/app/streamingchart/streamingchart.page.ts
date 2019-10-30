@@ -55,6 +55,8 @@ export class StreamingchartPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.admobFreeService.removeBannerAd();
+
     this.ga.trackView('StreamingchartPage');
 
     await this.setDates();
@@ -77,7 +79,6 @@ export class StreamingchartPage implements OnInit {
         clearInterval(interval);
       }
     }, 300);
-    this.admobFreeService.removeBannerAd();
   }
 
   ionViewWillLeave() {
@@ -85,8 +86,6 @@ export class StreamingchartPage implements OnInit {
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
-
-    this.admobFreeService.showBannerAd();
   }
 
   setYoutube_SL() {

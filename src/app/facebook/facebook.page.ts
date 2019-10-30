@@ -12,6 +12,7 @@ import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
 import { SELECT_FACEBOOK } from '../vo/query';
 import { EmailService } from '../service/email.service';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 export interface Facebook {
   userName: string;
@@ -38,7 +39,8 @@ export class FacebookPage implements OnInit {
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
     private emailService: EmailService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#304a80');
@@ -54,6 +56,8 @@ export class FacebookPage implements OnInit {
   }
 
   ngOnInit() {
+    this.admobFreeService.showBannerAd();
+
     this.ga.trackView('FacebookPage');
 
     this.loadingService.presentLoading();

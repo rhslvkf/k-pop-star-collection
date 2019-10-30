@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
@@ -11,13 +11,14 @@ import { SqlStorageService } from '../service/sql-storage.service';
 import { MENUS } from '../vo/menus';
 import { SELECT_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS, SELECT_STARS_COUNT, SELECT_STARS_COUNT_BY_NAME, SELECT_STARS_BY_NAME } from '../vo/query';
 import { Star, Site } from '../vo/star';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 @Component({
   selector: 'app-star',
   templateUrl: 'star.page.html',
   styleUrls: ['star.page.scss'],
 })
-export class StarPage {
+export class StarPage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   stars: Star[] = [];
@@ -32,7 +33,8 @@ export class StarPage {
     private activatedRoute: ActivatedRoute,
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     ga.trackView('StarPage');
 
@@ -42,6 +44,10 @@ export class StarPage {
     });
 
     this.setStars_SL();
+  }
+
+  ngOnInit() {
+    this.admobFreeService.showBannerAd();
   }
 
   pushStars(query: string, params: any[]) {

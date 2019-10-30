@@ -13,6 +13,7 @@ import { MenuToolBarService } from '../service/menu-toolbar.service';
 import { MENUS } from '../vo/menus';
 import { SqlStorageService } from '../service/sql-storage.service';
 import { SELECT_VLIVE } from '../vo/query';
+import { AdmobfreeService } from '../service/admobfree.service';
 
 @Component({
   selector: 'app-vlive',
@@ -30,7 +31,8 @@ export class VlivePage implements OnInit {
     private modalCtrl: ModalController,
     private menuToolbarService: MenuToolBarService,
     private sqlStorageService: SqlStorageService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#3cb7bd');
@@ -45,6 +47,8 @@ export class VlivePage implements OnInit {
   }
 
   ngOnInit() {
+    this.admobFreeService.showBannerAd();
+
     this.ga.trackView('VlivePage');
 
     this.loadingService.presentLoading();
@@ -61,7 +65,6 @@ export class VlivePage implements OnInit {
   }
 
   vliveIframeInit(vliveUrl: string) {
-    console.log('vliveUrl', vliveUrl);
     if(document.querySelector('#vlive-content iframe')) document.querySelector('#vlive-content iframe').remove();
 
     // create and insert vlive iframe tag

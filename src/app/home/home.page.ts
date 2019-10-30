@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -13,7 +13,7 @@ import { AdmobfreeService } from '../service/admobfree.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
   constructor(
     private statusBar: StatusBar,
@@ -28,6 +28,10 @@ export class HomePage {
       statusBar.backgroundColorByHexString('#1a9c95');
       menuToolbarService.changeClass(MENUS.HOME);
     });
+  }
+
+  ngOnInit() {
+    this.admobFreeService.showBannerAd();
   }
 
   showInterstitialAd() {

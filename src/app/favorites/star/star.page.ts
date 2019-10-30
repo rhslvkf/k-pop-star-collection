@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
@@ -11,13 +11,14 @@ import { Star, Site } from 'src/app/vo/star';
 import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
 import { MENUS } from 'src/app/vo/menus';
+import { AdmobfreeService } from 'src/app/service/admobfree.service';
 
 @Component({
   selector: 'app-star',
   templateUrl: './star.page.html',
   styleUrls: ['./star.page.scss'],
 })
-export class StarPage {
+export class StarPage implements OnInit {
   @ViewChild(IonContent, {static: false}) ionContent: IonContent;
   @ViewChild(IonInfiniteScroll, {static: false}) infiniteScroll: IonInfiniteScroll;
   stars: Star[] = [];
@@ -33,7 +34,8 @@ export class StarPage {
     private activatedRoute: ActivatedRoute,
     private statusBar: StatusBar,
     private menuToolbarService: MenuToolBarService,
-    private ga: GoogleAnalytics
+    private ga: GoogleAnalytics,
+    private admobFreeService: AdmobfreeService
   ) {
     this.ga.trackView('FavoriteStarPage');
 
@@ -43,6 +45,10 @@ export class StarPage {
 
       this.setFavoriteStars_SL();
     });
+  }
+
+  ngOnInit() {
+    this.admobFreeService.showBannerAd();
   }
 
   async setFavoriteStars_SL() {
