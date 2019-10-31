@@ -45,9 +45,24 @@ export class AppComponent {
     private screenOrientation: ScreenOrientation,
     private insomnia: Insomnia
   ) {
+    this.platform.ready().then(() => {
+      this.initializeApp();
+    });
+  }
+
+  initializeApp() {
     this.backButtonToExit();
-    
-    this.initializeApp();
+
+    this.platform.pause.subscribe(() => {
+      let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+      youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+    });
+
+    this.statusBar.backgroundColorByHexString('#1a9c95');
+    this.splashScreen.hide();
+
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    this.ga.startTrackerWithId('UA-92208975-3');
 
     let a = [
       {'a': 'fullscreenchange', 'b': 'fullscreen'},
@@ -59,26 +74,16 @@ export class AppComponent {
     for(let i = 0; i < a.length; i++) {
       document.addEventListener(a[i].a, function() {
         if (document[a[i].b]) { // 전체화면 O
-          screenOrientation.lock(screenOrientation.ORIENTATIONS.LANDSCAPE);
-          statusBar.hide();
-          insomnia.keepAwake();
+          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+          this.statusBar.hide();
+          this.insomnia.keepAwake();
         } else { // 전체화면 X
-          screenOrientation.lock(screenOrientation.ORIENTATIONS.PORTRAIT);
-          statusBar.show();
-          insomnia.allowSleepAgain();
+          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+          this.statusBar.show();
+          this.insomnia.allowSleepAgain();
         }
       });
     }
-  }
-
-  initializeApp() {
-    this.platform.ready().then(() => {
-      this.statusBar.backgroundColorByHexString('#1a9c95');
-      this.splashScreen.hide();
-
-      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
-      this.ga.startTrackerWithId('UA-92208975-3');
-    });
   }
 
   backButtonToExit() {
