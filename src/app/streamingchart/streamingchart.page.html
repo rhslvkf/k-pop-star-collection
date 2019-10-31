@@ -16,14 +16,21 @@
     <iframe id="youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
   </div>
   <div id="youtube-player-option" style="display: none;">
-    <span class="repeatYoutubePlay" (click)="repeatYoutubePlay()" [ngClass]="{'on': repeatFlag}"><ion-icon name="repeat"></ion-icon> Repeat play</span>
-    <span class="randomRepeatYoutubePlay" (click)="randomRepeatYoutubePlay()" [ngClass]="{'on': randomRepeatFlag}"><ion-icon name="shuffle"></ion-icon> Random repeat play</span>
-    <span (click)="closeYoutubePlayer()"><ion-icon name="close"></ion-icon> Close</span>
+    <ion-icon class="first" *ngIf="repeatStatus == 0" name="repeat" (click)="changeRepeatStatus()"></ion-icon>
+    <ion-icon class="first" *ngIf="repeatStatus == 1" name="repeat" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon>
+    <ion-icon class="first" *ngIf="repeatStatus == 2" name="shuffle" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon>
+    <ion-icon class="first" *ngIf="repeatStatus == 3" name="repeat" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon><span *ngIf="repeatStatus == 3" class="icon-overlay-text">1</span>
+    <ion-icon name="skip-backward" (click)="skipBackwardYoutubePlay()"></ion-icon>
+    <ion-icon *ngIf="!stopFlag" name="pause" (click)="pauseYoutubePlay()"></ion-icon>
+    <ion-icon *ngIf="stopFlag" name="play" (click)="playYoutubePlay()"></ion-icon>
+    <ion-icon name="skip-forward" (click)="skipForwardYoutubePlay()"></ion-icon>
+    <span class="last" (click)="closeYoutubePlayer()"><ion-icon name="close"></ion-icon> Close</span>
+    <input id="repeatStatusInput" type="hidden" value="{{ repeatStatus }}">
   </div>
 </ion-header>
 
 <ion-content id="youtube-content" [scrollEvents]="true" (ionScroll)="logScrolling()" padding>
-  <ion-card class="youtube-content" *ngFor="let youtube of youtubeList; let i = index" (click)="playYoutube(youtube.videoId)" [ngClass]="{'active': youtube.videoId == activeVideoId}">
+  <ion-card class="youtube-content" [attr.data-videoId]="youtube.videoId" *ngFor="let youtube of youtubeList; let i = index" (click)="playYoutubeByClick(youtube.videoId)" [ngClass]="{'active': youtube.videoId == activeVideoId}">
     <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
     <span class="ranking">{{ i + 1 }}</span>
     <span class="youtube-time">{{ youtube.time }}</span>

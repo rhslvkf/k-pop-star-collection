@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { youtubePlayHistory } from '../youtube/youtube.page';
 
 @Injectable({
   providedIn: 'root'
@@ -101,21 +102,35 @@ export class YoutubeEventListenerService {
 
   addYoutubeEventListener() {
     this.addYoutubeEventListener2(document.getElementById("youtube-iframe"), function(e) {
-      let repeatFlag = document.querySelector('.repeatYoutubePlay').classList.contains('on');
-      let randomRepeatFlag = document.querySelector('.randomRepeatYoutubePlay').classList.contains('on');
+      let repeatStatus = (<HTMLInputElement>document.querySelector('#repeatStatusInput')).value; // 0 : no repeat, 1 : repeat, 2 : shuffle, 3 : repeat only one
 
-      if(repeatFlag && e.info == 0) {
+      if(repeatStatus == "1" && e.info == 0) { // repeat
         let activePlayer = document.querySelector('ion-card.active');
         if(activePlayer) {
           let nextPlayer = activePlayer.nextSibling as HTMLElement;
-          if(nextPlayer) nextPlayer.click();
-          else (<HTMLElement>document.querySelector('.youtube-content')).click();
+          if(nextPlayer.classList.contains('youtube-content')) {
+            nextPlayer.click();
+            youtubePlayHistory.push(nextPlayer.dataset.videoid);
+          }
+          else {
+            let nextPlayer = <HTMLElement>document.querySelector('.youtube-content');
+            nextPlayer.click();
+            youtubePlayHistory.push(nextPlayer.dataset.videoid);
+          }
         } else {
-          (<HTMLElement>document.querySelector('.youtube-content')).click();
+          let nextPlayer = <HTMLElement>document.querySelector('.youtube-content');
+          nextPlayer.click();
+          youtubePlayHistory.push(nextPlayer.dataset.videoid);
         }
-      } else if(randomRepeatFlag && e.info == 0) {
+      } else if(repeatStatus == "2" && e.info == 0) { // shuffle
         let randomNumber = Math.floor(Math.random() * document.getElementsByClassName('youtube-content').length);
-        (<HTMLElement>document.getElementsByClassName('youtube-content')[randomNumber]).click();
+        let nextPlayer = <HTMLElement>document.getElementsByClassName('youtube-content')[randomNumber];
+        nextPlayer.click();
+        youtubePlayHistory.push(nextPlayer.dataset.videoid);
+      } else if(repeatStatus == "3" && e.info == 0) { // repeat only one
+        let nextPlayer = <HTMLElement>document.querySelector('ion-card.active');
+        nextPlayer.click();
+        youtubePlayHistory.push(nextPlayer.dataset.videoid);
       }
     });
   }

@@ -13,6 +13,7 @@ import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
 import { MENUS } from 'src/app/vo/menus';
 import { AdmobfreeService } from 'src/app/service/admobfree.service';
 import { YoutubeEventListenerService } from 'src/app/service/youtube-event-listener.service';
+import { youtubePlayHistory } from 'src/app/youtube/youtube.page';
 
 @Component({
   selector: 'app-youtube',
@@ -34,8 +35,8 @@ export class YoutubePage implements OnInit {
   selectQuery: string;
   countQuery: string;
 
-  repeatFlag = false;
-  randomRepeatFlag = false;
+  stopFlag = false;
+  repeatStatus = 0; // 0 : no repeat, 1 : repeat, 2 : shuffle, 3 : repeat only one
 
   constructor(
     private sqlStorageService: SqlStorageService,
@@ -108,6 +109,11 @@ export class YoutubePage implements OnInit {
         this.youtubeList.push({videoId: youtube.videoId, title: youtube.title, thumbnailUrl: youtube.thumbnailUrl, time: youtube.time, starName: youtube.starName});
       }
     });
+  }
+
+  playYoutubeByClick(videoId: string) {
+    youtubePlayHistory.push(videoId);
+    this.playYoutube(videoId);
   }
 
   playYoutube(videoId: string) {
@@ -208,16 +214,6 @@ export class YoutubePage implements OnInit {
     }, 500);
   }
 
-  repeatYoutubePlay() {
-    this.repeatFlag = !this.repeatFlag;
-    this.randomRepeatFlag = false;
-  }
-
-  randomRepeatYoutubePlay() {
-    this.randomRepeatFlag = !this.randomRepeatFlag;
-    this.repeatFlag = false;
-  }
-
   closeYoutubePlayer() {
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
@@ -226,6 +222,71 @@ export class YoutubePage implements OnInit {
     document.getElementById('youtube-player-option').style.display = 'none';
 
     this.activeVideoId = '';
+  }
+
+  pauseYoutubePlay() {
+    this.stopFlag = true;
+
+    let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
+
+  playYoutubePlay() {
+    this.stopFlag = false;
+
+    let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  }
+
+  skipForwardYoutubePlay() {
+    if(this.repeatStatus == 0 || this.repeatStatus == 1) { // repeat
+      let activePlayer = document.querySelector('ion-card.active');
+      if(activePlayer) {
+        let nextPlayer = activePlayer.nextSibling as HTMLElement;
+        if(nextPlayer.classList.contains('youtube-content')) {
+          nextPlayer.click();
+          youtubePlayHistory.push(nextPlayer.dataset.videoid);
+        }
+        else {
+          let nextPlayer = <HTMLElement>document.querySelector('.youtube-content');
+          nextPlayer.click();
+          youtubePlayHistory.push(nextPlayer.dataset.videoid);
+        }
+      } else {
+        let nextPlayer = <HTMLElement>document.querySelector('.youtube-content');
+        nextPlayer.click();
+        youtubePlayHistory.push(nextPlayer.dataset.videoid);
+      }
+    } else if(this.repeatStatus == 2) { // shuffle
+      let randomNumber = Math.floor(Math.random() * document.getElementsByClassName('youtube-content').length);
+      let nextPlayer = <HTMLElement>document.getElementsByClassName('youtube-content')[randomNumber];
+      nextPlayer.click();
+      youtubePlayHistory.push(nextPlayer.dataset.videoid);
+    } else if(this.repeatStatus == 3) { // repeat only one
+      let nextPlayer = <HTMLElement>document.querySelector('ion-card.active');
+      nextPlayer.click();
+      youtubePlayHistory.push(nextPlayer.dataset.videoid);
+    }
+  }
+
+  skipBackwardYoutubePlay() {
+    let preVideoId = this.getPreVideoId();
+    this.playYoutube(preVideoId);
+  }
+
+  getPreVideoId() {
+    let currVideoId = (<HTMLElement>document.querySelector('ion-card.active')).dataset.videoid;
+    let videoId = youtubePlayHistory.pop();
+
+    if(!videoId) return (<HTMLElement>document.querySelector('ion-card.active')).dataset.videoid;
+
+    if(currVideoId == videoId) return this.getPreVideoId();
+
+    return videoId;
+  }
+
+  changeRepeatStatus() {
+    this.repeatStatus = (this.repeatStatus + 1) % 4;
   }
 
 }

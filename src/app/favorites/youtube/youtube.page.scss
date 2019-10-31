@@ -7,7 +7,7 @@ ion-header {
     #youtube-player-option {
         color: white;
         background: black;
-        text-align: right;
+        text-align: center;
         padding: 5px 0px 5px 0px;
         font-size: 12px;
 
@@ -15,12 +15,33 @@ ion-header {
             color: coral;
         }
 
-        span {
-            padding: 0 10px;
+        .first {
+            padding: 0 10px 0 53px;
+            float: left;
+        }
+
+        .icon-overlay-text {
+            color: coral;
+            font-size: 6px;
+            position: relative;
+            left: -31px;
+            top: -1px;
+        }
+
+        span.last {
+            padding: 0 20px 0 10px;
+            float: right;
 
             ion-icon {
                 vertical-align: middle;
+                padding: 0px !important;
             }
+        }
+
+        ion-icon {
+            font-size: 18px;
+            vertical-align: middle;
+            padding: 0 20px;
         }
     }
 }
