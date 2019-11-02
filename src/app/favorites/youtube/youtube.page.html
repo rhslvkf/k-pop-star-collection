@@ -16,11 +16,12 @@
     <ion-icon class="first" *ngIf="repeatStatus == 2" name="shuffle" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon>
     <ion-icon class="first" *ngIf="repeatStatus == 3" name="repeat" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon><span *ngIf="repeatStatus == 3" class="icon-overlay-text">1</span>
     <ion-icon name="skip-backward" (click)="skipBackwardYoutubePlay()"></ion-icon>
-    <ion-icon *ngIf="!stopFlag" name="pause" (click)="pauseYoutubePlay()"></ion-icon>
-    <ion-icon *ngIf="stopFlag" name="play" (click)="playYoutubePlay()"></ion-icon>
+    <ion-icon *ngIf="stopFlag == 'F'" name="pause" (click)="pauseYoutubePlay()"></ion-icon>
+    <ion-icon *ngIf="stopFlag == 'T'" name="play" (click)="playYoutubePlay()"></ion-icon>
     <ion-icon name="skip-forward" (click)="skipForwardYoutubePlay()"></ion-icon>
     <span class="last" (click)="closeYoutubePlayer()"><ion-icon name="close"></ion-icon> Close</span>
     <input id="repeatStatusInput" type="hidden" value="{{ repeatStatus }}">
+    <input type="hidden" id="stopFlag" [(ngModel)]="stopFlag">
   </div>
 </ion-header>
 

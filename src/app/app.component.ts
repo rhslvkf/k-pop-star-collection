@@ -55,7 +55,7 @@ export class AppComponent {
 
     this.platform.pause.subscribe(() => {
       let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
-      youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      if(youtubeIframe) youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
     });
 
     this.statusBar.backgroundColorByHexString('#1a9c95');

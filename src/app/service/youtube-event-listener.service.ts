@@ -101,10 +101,16 @@ export class YoutubeEventListenerService {
   constructor() { }
 
   addYoutubeEventListener() {
-    this.addYoutubeEventListener2(document.getElementById("youtube-iframe"), function(e) {
+    this.addYoutubeEventListener2(document.getElementById("youtube-iframe"), function(e) { // e.info - 0 : end, 1 : play, 2 : pause
       let repeatStatus = (<HTMLInputElement>document.querySelector('#repeatStatusInput')).value; // 0 : no repeat, 1 : repeat, 2 : shuffle, 3 : repeat only one
-
-      if(repeatStatus == "1" && e.info == 0) { // repeat
+      
+      if(e.info == 2) { // pause
+        (<HTMLInputElement>document.getElementById('stopFlag')).value = 'T';
+        document.getElementById('stopFlag').dispatchEvent(new Event('input'));
+      } else if(e.info == 1) { // play
+        (<HTMLInputElement>document.getElementById('stopFlag')).value = 'F';
+        document.getElementById('stopFlag').dispatchEvent(new Event('input'));
+      } else if(repeatStatus == "1" && e.info == 0) { // repeat
         let activePlayer = document.querySelector('ion-card.active');
         if(activePlayer) {
           let nextPlayer = activePlayer.nextSibling as HTMLElement;

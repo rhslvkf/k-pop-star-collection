@@ -38,6 +38,7 @@ export class LoadingPagePage {
     private platform: Platform
   ) {
     platform.ready().then(() => {
+      this.ga.trackView('LoadingPage');
       menuCtrl.enable(false);
       this.loading();
     });

@@ -16,11 +16,12 @@
     <ion-icon class="first" *ngIf="repeatStatus == 2" name="shuffle" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon>
     <ion-icon class="first" *ngIf="repeatStatus == 3" name="repeat" (click)="changeRepeatStatus()" style="color: coral;"></ion-icon><span *ngIf="repeatStatus == 3" class="icon-overlay-text">1</span>
     <ion-icon name="skip-backward" (click)="skipBackwardYoutubePlay()"></ion-icon>
-    <ion-icon *ngIf="!stopFlag" name="pause" (click)="pauseYoutubePlay()"></ion-icon>
-    <ion-icon *ngIf="stopFlag" name="play" (click)="playYoutubePlay()"></ion-icon>
+    <ion-icon *ngIf="stopFlag == 'F'" name="pause" (click)="pauseYoutubePlay()"></ion-icon>
+    <ion-icon *ngIf="stopFlag == 'T'" name="play" (click)="playYoutubePlay()"></ion-icon>
     <ion-icon name="skip-forward" (click)="skipForwardYoutubePlay()"></ion-icon>
     <span class="last" (click)="closeYoutubePlayer()"><ion-icon name="close"></ion-icon> Close</span>
     <input id="repeatStatusInput" type="hidden" value="{{ repeatStatus }}">
+    <input type="hidden" id="stopFlag" [(ngModel)]="stopFlag">
   </div>
 </ion-header>
 
@@ -45,7 +46,17 @@
     </ion-fab-list>
   </ion-fab>
 
-  <div class="youtube-sort">
+  <div class="youtube-sort-type">
+    <ion-item>
+      <div><ion-icon name="funnel"></ion-icon></div>
+      <ion-select interface="popover" [(ngModel)]="sortType" (ionChange)="changeSortType()">
+        <ion-select-option selected value="R">Recently Popular</ion-select-option>
+        <ion-select-option value="M">Most Viewed</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <div class="youtube-sort" *ngIf="sortType == 'M'">
     <div class="button-contents">
       <ion-button fill="outline" size="small" [ngClass]="{ 'selected': allSort }" (click)="youtubeSorting('ALL')">All</ion-button>
       <ion-button fill="outline" size="small" [ngClass]="{ 'selected': mvSort }" (click)="youtubeSorting('MV')">MV</ion-button>
@@ -56,15 +67,17 @@
     </div>
   </div>
 
-  <ion-card class="youtube-content" [attr.data-videoId]="youtube.videoId" *ngFor="let youtube of youtubeList" (click)="playYoutubeByClick(youtube.videoId)" [ngClass]="{'active': youtube.videoId == activeVideoId}">
-    <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
-    <span class="youtube-time">{{ youtube.time }}</span>
-    <span *ngIf="!youtube.favoriteFlag" class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
-    <span *ngIf="youtube.favoriteFlag" class="favorite" (click)="removeFavorite(youtube.videoId, $event)"><ion-icon name="star"></ion-icon></span>
-    <ion-card-header>
-      <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
-    </ion-card-header>
-  </ion-card>
+  <div style="clear: both;">
+    <ion-card class="youtube-content" [attr.data-videoId]="youtube.videoId" *ngFor="let youtube of youtubeList" (click)="playYoutubeByClick(youtube.videoId)" [ngClass]="{'active': youtube.videoId == activeVideoId}">
+      <ion-img src="{{ youtube.thumbnailUrl }}" style="width: 155px; height: 87px;"></ion-img>
+      <span class="youtube-time">{{ youtube.time }}</span>
+      <span *ngIf="!youtube.favoriteFlag" class="favorite" (click)="addFavorite(youtube.videoId, $event)"><ion-icon name="star-outline"></ion-icon></span>
+      <span *ngIf="youtube.favoriteFlag" class="favorite" (click)="removeFavorite(youtube.videoId, $event)"><ion-icon name="star"></ion-icon></span>
+      <ion-card-header>
+        <ion-card-subtitle>{{ youtube.title }}</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+  </div>
 
   <ion-button id="scrollTopBtn" class="scrollTopBtn" shape="round" (click)="scrollToTop()">
     <ion-icon name="arrow-up"></ion-icon>

@@ -35,7 +35,7 @@ export class StreamingchartPage implements OnInit {
 
   selectQuery: string;
 
-  stopFlag = false;
+  stopFlag = 'T'; // F : false, T : true
   repeatStatus = 0; // 0 : no repeat, 1 : repeat, 2 : shuffle, 3 : repeat only one
 
   constructor(
@@ -218,14 +218,14 @@ export class StreamingchartPage implements OnInit {
   }
 
   pauseYoutubePlay() {
-    this.stopFlag = true;
+    this.stopFlag = 'T';
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
   }
 
   playYoutubePlay() {
-    this.stopFlag = false;
+    this.stopFlag = 'F';
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { IonContent, ModalController, IonInfiniteScroll } from '@ionic/angular';
@@ -42,8 +42,10 @@ export class YoutubePage implements OnInit {
   selectQuery: string;
   countQuery: string;
 
-  stopFlag = false;
+  stopFlag = 'T'; // F : false, T : true
   repeatStatus = 0; // 0 : no repeat, 1 : repeat, 2 : shuffle, 3 : repeat only one
+
+  sortType: string = 'R'; // R : Recently Popular, M : Most Viewed
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -83,7 +85,40 @@ export class YoutubePage implements OnInit {
 
     if(this.starName == '') this.starName = this.activatedRoute.snapshot.paramMap.get('starName');
 
-    this.setYoutube_SL();
+    let countQuery = '';
+    let selectQuery = '';
+    if(this.starName == 'fullList') {
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM hot_youtube`;
+      selectQuery = `
+        SELECT
+          youtube.*, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = hot_youtube.videoId) AS favoriteFlag
+        FROM
+          hot_youtube
+        INNER JOIN
+          youtube
+        ON
+          hot_youtube.videoId = youtube.videoId AND hot_youtube.starName = youtube.starName
+        GROUP BY hot_youtube.videoId
+        ORDER BY youtube.views DESC
+      `;
+    } else {
+      countQuery = `SELECT COUNT(*) AS youtubeCount FROM hot_youtube WHERE starName = '${this.starName}'`;
+      selectQuery = `
+        SELECT
+          youtube.*, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = hot_youtube.videoId) AS favoriteFlag
+        FROM
+          hot_youtube
+        INNER JOIN
+          youtube
+        ON
+          hot_youtube.videoId = youtube.videoId AND hot_youtube.starName = youtube.starName
+        WHERE
+          hot_youtube.starName = '${this.starName}'
+        ORDER BY hot_youtube.rank ASC
+      `;
+    }
+
+    this.setYoutube_SL(countQuery, selectQuery);
   }
 
   ionViewDidEnter() {
@@ -118,18 +153,10 @@ export class YoutubePage implements OnInit {
     this.youtubeCount = data.res.rows.item(0).youtubeCount;
   }
 
-  setYoutube_SL() {
+  setYoutube_SL(countQuery: string, selectQuery: string) {
     this.youtubeList = [];
     this.offset = 0;
-    let countQuery = '';
-    let selectQuery = '';
-    if(this.starName == 'fullList') {
-      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName != 'streamingchart'`;
-      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName != 'streamingchart' GROUP BY videoId ORDER BY views DESC`;
-    } else {
-      countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
-      selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
-    }
+    
     this.setYoutubeCount(countQuery);
     this.pushYoutube(selectQuery + ` LIMIT ${this.offset}, ${this.limit}`);
 
@@ -329,14 +356,14 @@ export class YoutubePage implements OnInit {
   }
 
   pauseYoutubePlay() {
-    this.stopFlag = true;
+    this.stopFlag = 'T';
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
   }
 
   playYoutubePlay() {
-    this.stopFlag = false;
+    this.stopFlag = 'F';
 
     let youtubeIframe = document.getElementById('youtube-iframe') as HTMLIFrameElement;
     youtubeIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
@@ -390,6 +417,64 @@ export class YoutubePage implements OnInit {
 
   changeRepeatStatus() {
     this.repeatStatus = (this.repeatStatus + 1) % 4;
+  }
+
+  changeSortType() {
+    if(this.sortType == 'R') { // Recently Popular
+      let countQuery = '';
+      let selectQuery = '';
+      if(this.starName == 'fullList') {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM hot_youtube`;
+        selectQuery = `
+          SELECT
+            youtube.*, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = hot_youtube.videoId) AS favoriteFlag
+          FROM
+            hot_youtube
+          INNER JOIN
+            youtube
+          ON
+            hot_youtube.videoId = youtube.videoId AND hot_youtube.starName = youtube.starName
+          GROUP BY hot_youtube.videoId
+          ORDER BY youtube.views DESC
+        `;
+      } else {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM hot_youtube WHERE starName = '${this.starName}'`;
+        selectQuery = `
+          SELECT
+            youtube.*, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = hot_youtube.videoId) AS favoriteFlag
+          FROM
+            hot_youtube
+          INNER JOIN
+            youtube
+          ON
+            hot_youtube.videoId = youtube.videoId AND hot_youtube.starName = youtube.starName
+          WHERE
+            hot_youtube.starName = '${this.starName}'
+          ORDER BY hot_youtube.rank ASC
+        `;
+      }
+
+      this.setYoutube_SL(countQuery, selectQuery);
+    } else if(this.sortType == 'M') { // Most Viewed
+      this.allSort = true;
+      this.mvSort = false;
+      this.fanCamSort = false;
+      this.stageMixSort = false;
+      this.dancePracticeSort = false;
+      this.lyricsSort = false;
+
+      let countQuery = '';
+      let selectQuery = '';
+      if(this.starName == 'fullList') {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName != 'streamingchart'`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName != 'streamingchart' GROUP BY videoId ORDER BY views DESC`;
+      } else {
+        countQuery = `SELECT COUNT(*) AS youtubeCount FROM youtube WHERE starName = '${this.starName}'`;
+        selectQuery = `SELECT *, (SELECT COUNT(*) FROM favorite_youtube WHERE videoId = youtube.videoId) AS favoriteFlag FROM youtube WHERE starName = '${this.starName}' ORDER BY views DESC`;
+      }
+
+      this.setYoutube_SL(countQuery, selectQuery);
+    }
   }
 
 }
