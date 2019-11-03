@@ -137,6 +137,16 @@ export class YoutubeEventListenerService {
         let nextPlayer = <HTMLElement>document.querySelector('ion-card.active');
         nextPlayer.click();
         youtubePlayHistory.push(nextPlayer.dataset.videoid);
+      } else if(e.info == 0) { // one play finish
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if ((<any>document).webkitExitFullscreen) {
+          (<any>document).webkitExitFullscreen();
+        } else if ((<any>document).mozCancelFullScreen) {
+          (<any>document).mozCancelFullScreen();
+        } else if ((<any>document).msExitFullscreen) {
+          (<any>document).msExitFullscreen();
+        }
       }
     });
   }

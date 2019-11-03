@@ -15,33 +15,29 @@ ion-header {
             color: coral;
         }
 
-        .first {
-            padding: 0 10px 0 53px;
-            float: left;
-        }
-
         .icon-overlay-text {
             color: coral;
             font-size: 6px;
             position: relative;
-            left: -31px;
+            left: -29px;
             top: -1px;
+            display: inline-block;
+            width: 0px;
         }
 
         span.last {
-            padding: 0 20px 0 10px;
-            float: right;
+            width: 20%;
 
             ion-icon {
-                vertical-align: middle;
-                padding: 0px !important;
+                font-size: 18px;
+                width: 18px !important;
             }
         }
 
         ion-icon {
+            width: 55px;
             font-size: 18px;
             vertical-align: middle;
-            padding: 0 20px;
         }
     }
 }

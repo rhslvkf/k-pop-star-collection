@@ -170,7 +170,7 @@ export class YoutubePage implements OnInit {
   }
 
   playYoutube(videoId: string) {
-    document.getElementById('youtube-iframe').setAttribute('src', `https://www.youtube.com/embed/${videoId}?enablejsapi=1&version=3&playerapiid=ytplayer`);
+    document.getElementById('youtube-iframe').setAttribute('src', `https://www.youtube.com/embed/${videoId}?enablejsapi=1&version=3&playerapiid=ytplayer&fs=0&rel=0`);
 
     this.activeVideoId = videoId;
     document.getElementById('youtube-div').style.display = '';
@@ -402,6 +402,19 @@ export class YoutubePage implements OnInit {
   skipBackwardYoutubePlay() {
     let preVideoId = this.getPreVideoId();
     this.playYoutube(preVideoId);
+  }
+
+  fullScreenYoutubePlay() {
+    let youtubeIframe = document.getElementById('youtube-iframe') as any;
+    if(youtubeIframe.requestFullscreen) {
+      youtubeIframe.requestFullscreen();
+    } else if(youtubeIframe.mozRequestFullScreen) { /* Firefox */
+      youtubeIframe.mozRequestFullScreen();
+    } else if(youtubeIframe.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      youtubeIframe.webkitRequestFullscreen();
+    } else if(youtubeIframe.msRequestFullscreen) { /* IE/Edge */
+      youtubeIframe.msRequestFullscreen();
+    }
   }
 
   getPreVideoId() {

@@ -73,14 +73,18 @@ export class AppComponent {
 
     for(let i = 0; i < a.length; i++) {
       document.addEventListener(a[i].a, function() {
+        let screenOrientation = new ScreenOrientation();
+        let statusBar = new StatusBar();
+        let insomnia = new Insomnia();
+
         if (document[a[i].b]) { // 전체화면 O
-          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
-          this.statusBar.hide();
-          this.insomnia.keepAwake();
+          screenOrientation.lock(screenOrientation.ORIENTATIONS.LANDSCAPE);
+          statusBar.hide();
+          insomnia.keepAwake();
         } else { // 전체화면 X
-          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
-          this.statusBar.show();
-          this.insomnia.allowSleepAgain();
+          screenOrientation.lock(screenOrientation.ORIENTATIONS.PORTRAIT);
+          statusBar.show();
+          insomnia.allowSleepAgain();
         }
       });
     }
