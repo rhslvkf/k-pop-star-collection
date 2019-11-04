@@ -119,12 +119,20 @@ ion-content {
             font-weight: bold;
         }
 
+        .share {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            font-size: 18px;
+            color: #8e38ff;
+        }
+
         .favorite {
             position: absolute;
             right: 5px;
-            top: 2px;
+            top: 3px;
             font-size: 20px;
-            color: red;
+            color: #8e38ff;
         }
     }
 

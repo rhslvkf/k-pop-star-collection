@@ -108,7 +108,7 @@ ion-content {
         ion-card-header {
             padding: 5px 10px;
             height: 42px;
-            background: red;
+            background: #FF6363;
             border-top: 1px solid #ebebeb;
         }
         
@@ -143,12 +143,20 @@ ion-content {
             font-weight: bold;
         }
 
+        .share {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            font-size: 18px;
+            color: #FF6363;
+        }
+
         .favorite {
             position: absolute;
             right: 5px;
-            top: 2px;
+            top: 3px;
             font-size: 20px;
-            color: red;
+            color: #FF6363;
         }
     }
 

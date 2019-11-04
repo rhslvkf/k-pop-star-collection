@@ -29,10 +29,16 @@
         color: white;
         font-weight: bold;
   
+        .share {
+          vertical-align: middle;
+          color: #FF6363;
+          padding: 0 10px;
+        }
+
         .favorite {
           vertical-align: middle;
-          float: right;
-          color: red;
+          color: #FF6363;
+          padding: 0 10px;
         }
       }
     }

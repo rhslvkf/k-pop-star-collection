@@ -4,9 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
-import { SELECT_FAVORITE_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS, SELECT_FAVORITE_STARS_COUNT, SELECT_FAVORITE_STARS_BY_NAME, SELECT_FAVORITE_STARS_COUNT_BY_NAME } from 'src/app/vo/query';
+import { SELECT_FAVORITE_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS, SELECT_FAVORITE_STARS_COUNT, SELECT_FAVORITE_STARS_BY_NAME, SELECT_FAVORITE_STARS_COUNT_BY_NAME, SELECT_FACEBOOK, SELECT_TWITTER, SELECT_VLIVE } from 'src/app/vo/query';
 import { Star, Site } from 'src/app/vo/star';
 import { MyToastService } from 'src/app/service/my-toast.service';
 import { MenuToolBarService } from 'src/app/service/menu-toolbar.service';
@@ -35,7 +36,8 @@ export class StarPage implements OnInit {
     private statusBar: StatusBar,
     private menuToolbarService: MenuToolBarService,
     private ga: GoogleAnalytics,
-    private admobFreeService: AdmobfreeService
+    private admobFreeService: AdmobfreeService,
+    private socialSharing: SocialSharing
   ) {
     this.ga.trackView('FavoriteStarPage');
 
@@ -141,6 +143,29 @@ export class StarPage implements OnInit {
       this.infiniteScroll.disabled = true;
     }
     this.pushStars(SELECT_FAVORITE_STARS_BY_NAME, [term, this.offset, this.limit]);
+  }
+
+  async shareStar(star: Star) {
+    let message = `${star.name}`;
+    if(star.sites.officialSite) message += `\nofficialSite - ${star.sites.officialSite}`;
+    if(star.sites.instagram) message += `\ninstagram - ${star.sites.instagram}`;
+    if(star.sites.blog) message += `\nblog - ${star.sites.blog}`;
+    let facebook = await this.sqlStorageService.query(SELECT_FACEBOOK, [star.name]);
+    if(facebook.res.rows.length > 0) message += `\nfacebook`;
+    for(let i = 0; i < facebook.res.rows.length; i++) {
+      message += `\n${facebook.res.rows.item(i).userName} - ${facebook.res.rows.item(i).timelineUrl}`;
+    }
+    let twitter = await this.sqlStorageService.query(SELECT_TWITTER, [star.name]);
+    if(twitter.res.rows.length > 0) message += `\ntwitter`;
+    for(let i = 0; i < twitter.res.rows.length; i++) {
+      message += `\n${twitter.res.rows.item(i).userName} - ${twitter.res.rows.item(i).timelineUrl}`;
+    }
+    let vlive = await this.sqlStorageService.query(SELECT_VLIVE, [star.name]);
+    if(vlive.res.rows.length > 0) message += `\nvlive - ${vlive.res.rows.item(0).vliveUrl}`;
+
+    message += `\n\nK-POP Star Collection - You can enjoy Youtube, SNS, vlive of K-POP Stars in one app.\nhttps://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection`;
+
+    this.socialSharing.share(message, '', '', '');
   }
 
 }

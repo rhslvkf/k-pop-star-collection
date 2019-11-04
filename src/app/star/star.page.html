@@ -16,8 +16,11 @@
     <ion-card-header>
       <ion-card-title>
         <span>{{ star.name }}</span>
-        <span *ngIf="!star.favoriteFlag" class="favorite" (click)="addFavorite(star.name)"><ion-icon name="star-outline"></ion-icon></span>
-        <span *ngIf="star.favoriteFlag" class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="star"></ion-icon></span>
+        <span style="float: right;">
+          <span class="share" (click)="shareStar(star)"><ion-icon name="share-alt"></ion-icon></span>
+          <span *ngIf="!star.favoriteFlag" class="favorite" (click)="addFavorite(star.name)"><ion-icon name="star-outline"></ion-icon></span>
+          <span *ngIf="star.favoriteFlag" class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="star"></ion-icon></span>
+        </span>
       </ion-card-title>
     </ion-card-header>
     <ion-card-content *ngIf="star.sites">

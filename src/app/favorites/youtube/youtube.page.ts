@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
 import { SELECT_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_STAR_NAME, DELETE_FAVORITE_YOUTUBE, SELECT_FAVORITE_YOUTUBE_COUNT } from 'src/app/vo/query';
@@ -46,7 +47,8 @@ export class YoutubePage implements OnInit {
     private menuToolbarService: MenuToolBarService,
     private ga: GoogleAnalytics,
     private admobFreeService: AdmobfreeService,
-    private youtubeEventListener: YoutubeEventListenerService
+    private youtubeEventListener: YoutubeEventListenerService,
+    private socialSharing: SocialSharing
   ) {
     this.ga.trackView('FavoriteYoutubePage');
 
@@ -300,6 +302,16 @@ export class YoutubePage implements OnInit {
 
   changeRepeatStatus() {
     this.repeatStatus = (this.repeatStatus + 1) % 4;
+  }
+
+  shareYoutube(videoId: string, event: Event) {
+    event.stopPropagation();
+
+    let message = 'You can enjoy Youtube, SNS, vlive of K-POP Stars in one app.\nhttps://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection';
+    let subject = 'K-POP Star Collection';
+    let fullMessage = `https://www.youtube.com/watch?v=${videoId}\n\n${subject} - ${message}`;
+
+    this.socialSharing.share(fullMessage, '', '', '');
   }
 
 }

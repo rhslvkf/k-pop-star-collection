@@ -23,7 +23,10 @@
     <ion-card-header>
       <ion-card-title>
         <span>{{ star.name }}</span>
-        <span class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="star"></ion-icon></span>
+        <span style="float: right;">
+          <span class="share" (click)="shareStar(star)"><ion-icon name="share-alt"></ion-icon></span>
+          <span class="favorite" (click)="removeFavorite(star.name)"><ion-icon name="trash"></ion-icon></span>
+        </span>
       </ion-card-title>
     </ion-card-header>
     <ion-card-content *ngIf="star.sites">

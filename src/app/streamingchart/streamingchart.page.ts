@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonInfiniteScroll, ModalController } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
 import { Youtube } from '../vo/youtube';
 import { MyToastService } from '../service/my-toast.service';
@@ -47,7 +48,8 @@ export class StreamingchartPage implements OnInit {
     private sqlStorageService: SqlStorageService,
     private ga: GoogleAnalytics,
     private admobFreeService: AdmobfreeService,
-    private youtubeEventListener: YoutubeEventListenerService
+    private youtubeEventListener: YoutubeEventListenerService,
+    private socialSharing: SocialSharing
   ) {
     activatedRoute.params.subscribe(() => {
       statusBar.backgroundColorByHexString('#d40000');
@@ -292,6 +294,16 @@ export class StreamingchartPage implements OnInit {
 
   changeRepeatStatus() {
     this.repeatStatus = (this.repeatStatus + 1) % 4;
+  }
+
+  shareYoutube(videoId: string, event: Event) {
+    event.stopPropagation();
+
+    let message = 'You can enjoy Youtube, SNS, vlive of K-POP Stars in one app.\nhttps://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection';
+    let subject = 'K-POP Star Collection';
+    let fullMessage = `https://www.youtube.com/watch?v=${videoId}\n\n${subject} - ${message}`;
+
+    this.socialSharing.share(fullMessage, '', '', '');
   }
 
 }
