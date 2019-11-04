@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { SqlStorageService } from '../sql-storage.service';
-import { INSERT_STREAMING_CHART } from 'src/app/vo/query';
+import { INSERT_STREAMING_CHART } from 'src/app/vo/streaming_chart_query';
 
 @Injectable({
   providedIn: 'root'
