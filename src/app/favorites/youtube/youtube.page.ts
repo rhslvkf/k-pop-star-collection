@@ -305,6 +305,8 @@ export class YoutubePage implements OnInit {
   }
 
   shareYoutube(videoId: string, event: Event) {
+    this.ga.trackEvent('Share', 'shareYoutube');
+
     event.stopPropagation();
 
     let message = 'You can enjoy Youtube, SNS, vlive of K-POP Stars in one app.\nhttps://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection';

@@ -154,6 +154,8 @@ export class StarPage implements OnInit {
   }
 
   async shareStar(star: Star) {
+    this.ga.trackEvent('Share', 'shareStar');
+
     let message = `${star.name}`;
     if(star.sites.officialSite) message += `\nofficialSite - ${star.sites.officialSite}`;
     if(star.sites.instagram) message += `\ninstagram - ${star.sites.instagram}`;
