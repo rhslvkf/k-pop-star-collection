@@ -24,9 +24,9 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content *ngIf="star.sites">
-      <span *ngIf="star.sites.officialSite"><a href="{{ star.sites.officialSite }}">Official Site<ion-icon name="open"></ion-icon></a> &nbsp;</span>
-      <span *ngIf="star.sites.blog"><a href="{{ star.sites.blog }}">Blog<ion-icon name="open"></ion-icon></a> &nbsp;</span>
-      <span *ngIf="star.sites.instagram"><a href="{{ star.sites.instagram }}">Instagram<ion-icon name="open"></ion-icon></a></span>
+      <span *ngIf="star.sites.officialSite" (click)="openSiteInAppBrowser(star.sites.officialSite)"><a>Official Site<ion-icon name="open"></ion-icon></a> &nbsp;</span>
+      <span *ngIf="star.sites.blog" (click)="openSiteInAppBrowser(star.sites.blog)"><a>Blog<ion-icon name="open"></ion-icon></a> &nbsp;</span>
+      <span *ngIf="star.sites.instagram" (click)="openSiteInAppBrowser(star.sites.instagram)"><a>Instagram<ion-icon name="open"></ion-icon></a></span>
     </ion-card-content>
     <ion-row>
       <ion-col routerLink="/youtube/{{ star.name }}">

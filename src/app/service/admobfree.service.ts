@@ -9,15 +9,15 @@ import { AdMobFree, AdMobFreeBannerConfig, AdMobFreeInterstitialConfig } from '@
 export class AdmobfreeService {
 
   bannerConfig: AdMobFreeBannerConfig = {
-    // isTesting: true, // Remove in production
+    isTesting: true, // Remove in production
     autoShow: true,
-    id: "ca-app-pub-8843457940870268/8256641655"
+    // id: "ca-app-pub-8843457940870268/8256641655"
   };
 
   interstitialConfig: AdMobFreeInterstitialConfig = {
-    // isTesting: true, // Remove in production
+    isTesting: true, // Remove in production
     autoShow: false,
-    id: "ca-app-pub-8843457940870268/6943559981"
+    // id: "ca-app-pub-8843457940870268/6943559981"
   };
 
   constructor(

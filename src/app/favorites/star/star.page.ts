@@ -5,6 +5,7 @@ import { IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 import { SqlStorageService } from 'src/app/service/sql-storage.service';
 import { SELECT_FAVORITE_STARS, SELECT_STAR_SITES, UPDATE_FAVORITE_STARS, SELECT_FAVORITE_STARS_COUNT, SELECT_FAVORITE_STARS_BY_NAME, SELECT_FAVORITE_STARS_COUNT_BY_NAME, SELECT_FACEBOOK, SELECT_TWITTER, SELECT_VLIVE } from 'src/app/vo/query';
@@ -37,7 +38,8 @@ export class StarPage implements OnInit {
     private menuToolbarService: MenuToolBarService,
     private ga: GoogleAnalytics,
     private admobFreeService: AdmobfreeService,
-    private socialSharing: SocialSharing
+    private socialSharing: SocialSharing,
+    private inappbrowser: InAppBrowser
   ) {
     this.ga.trackView('FavoriteStarPage');
 
@@ -167,7 +169,18 @@ export class StarPage implements OnInit {
 
     message += `\n\nK-POP Star Collection - You can enjoy Youtube, SNS, vlive of K-POP Stars in one app.\nhttps://play.google.com/store/apps/details?id=com.rhslvkf.kpopstarcollection`;
 
-    this.socialSharing.share(message, '', '', '');
+    await this.admobFreeService.removeBannerAd();
+    await this.socialSharing.share(message, '', '', '');
+    await this.admobFreeService.showBannerAd();
+  }
+
+  async openSiteInAppBrowser(url: string) {
+    await this.admobFreeService.removeBannerAd();
+    let iab = this.inappbrowser.create(url, '_blank', 'location=no');
+
+    iab.on('exit').subscribe(event => {
+      this.admobFreeService.showBannerAd();
+    });
   }
 
 }
